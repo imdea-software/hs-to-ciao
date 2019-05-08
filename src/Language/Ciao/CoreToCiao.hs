@@ -150,7 +150,7 @@ caseToTerm :: CEnv -> CoreExpr -> Var -> Type -> Alt Var -> State CGEnv [Clause 
 caseToTerm γ _ _ _ (DEFAULT, xs, e) 
   = exprToTerm (foldl (flip (+=)) γ xs) e 
 caseToTerm γ _ _ _ (LitAlt _, _, e)
-  = return []  
+  = undefined 
 caseToTerm γ ee _ _ (DataAlt c, xs, e)
   | c == nilDataCon 
   = do cee <- exprToTerm γ ee 
