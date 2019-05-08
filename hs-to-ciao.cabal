@@ -8,7 +8,10 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library 
-  exposed-modules:     HsToCiaoPP, Language.Ciao.CoreToCiao, Language.Ciao.Types
+  exposed-modules:     HsToCiaoPP, 
+                       Language.Ciao.CoreToCiao, 
+                       Language.Ciao.Types, 
+                       Language.Ghc.Misc
   hs-source-dirs:      src
   build-depends:       base, ghc
   build-depends:       unordered-containers, mtl, hashable

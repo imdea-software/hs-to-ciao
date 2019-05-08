@@ -3,6 +3,7 @@ module HsToCiaoPP (plugin) where
 import GhcPlugins
 import Language.Ciao.Types
 import Language.Ciao.CoreToCiao
+import Language.Ghc.Misc
 import Data.Char (toLower)
 
 plugin :: Plugin
@@ -11,22 +12,23 @@ plugin = defaultPlugin {
   }
 
 install :: [CommandLineOption] -> [CoreToDo] -> CoreM [CoreToDo]
-install cmd todo = do
-  -- reinitializeGlobals
-  liftIO $ putStrLn (show cmd) 
-  return (CoreDoPluginPass "Say name" pass : todo)
+install cmd todo =
+  return (CoreDoPluginPass "CiaoTranslation" pass : todo)
 
 pass :: ModGuts -> CoreM ModGuts
 pass modguts= do 
-    let name = showSDocUnsafe $ pprModule $ mg_module modguts
-    let ciaoCore = translate $ mg_binds modguts
-    liftIO $ putStrLn ("Translation = \n" ++ show ciaoCore)
-    liftIO $ writeFile ("./out/" ++ map toLower name ++ ".pl") (show ciaoCore)
-    bindsOnlyPass (mapM (return)) modguts
-  where printBind :: CoreBind -> CoreM CoreBind
-        printBind bndr@(NonRec b _) = do
-          putMsgS $ ("Non-recursive binding named " ++ showSDocUnsafe (ppr b))
-          return bndr 
-        printBind bndr@(Rec xes) = do 
-          putMsgS $ ("Recursive binding named " ++ showSDocUnsafe (ppr xes))
-          return bndr
+    let name     = showSDocUnsafe $ pprModule $ mg_module modguts
+    let hsBinds  = mg_binds modguts
+    let ciaoCore = translate hsBinds  
+    -- Print initial Haskell Binds 
+    liftIO $ putStrLn $ "Haskell Binds:"
+    liftIO $ putStrLn $ show hsBinds 
+    -- Print Ciao translation
+    liftIO $ putStrLn $ "Ciao Code:"
+    liftIO $ putStrLn $ show ciaoCore  
+    -- Write tranlsation into the .pl file 
+    liftIO $ writeFile (ciaoFileName name) (show ciaoCore)
+    bindsOnlyPass (mapM return) modguts
+
+ciaoFileName :: String -> String 
+ciaoFileName name = "./out/" ++ map toLower name ++ ".pl"
