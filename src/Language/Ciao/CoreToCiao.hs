@@ -72,7 +72,7 @@ exprToTerm :: CEnv -> CoreExpr -> State CGEnv [Clause CInfo]
 exprToTerm γ (Var x)
  = return  (x ?= γ)
 exprToTerm γ (Lit l)
- = return $ [CBasic $ litToTerm l] 
+ = return $ [] -- TODO[CBasic $ litToTerm l] 
 exprToTerm γ (App f e) | isTypeArg e
   = exprToTerm γ f 
 exprToTerm γ (App f e) | isPredTy (exprType e)
@@ -150,7 +150,7 @@ caseToTerm :: CEnv -> CoreExpr -> Var -> Type -> Alt Var -> State CGEnv [Clause 
 caseToTerm γ _ _ _ (DEFAULT, xs, e) 
   = exprToTerm (foldl (flip (+=)) γ xs) e 
 caseToTerm γ _ _ _ (LitAlt _, _, e)
-  = undefined 
+  = return []  
 caseToTerm γ ee _ _ (DataAlt c, xs, e)
   | c == nilDataCon 
   = do cee <- exprToTerm γ ee 
@@ -186,7 +186,7 @@ toCondUnify (CBasic t1) t = [CEq t1 t]
 toCondUnify (CCond t1 ts) t = CEq t1 t:ts
 
 litToTerm :: Literal -> CTerm CInfo
-litToTerm = undefined 
+litToTerm l = error ("Hmmm..." ++ show l)
 
 (++=) :: Var -> CEnv -> CEnv 
 x ++= (CEnv γ) = CEnv $ M.insert x (Left $ toFId x) γ
@@ -235,7 +235,7 @@ x ?= _
   | show x == "<="
   = [CBasic $ CLessEq []]
 x ?= γ = case M.lookup x (cIds γ) of 
-            Nothing          -> trace ("Not Found " ++ show x) [CBasic $ CVar defvar] 
+            Nothing          -> [] -- trace ("Not Found " ++ show x) [CBasic $ CVar defvar] 
             Just (Left fid)  -> [CBasic $ CFunctor fid []]
             Just (Right vid) -> [CBasic $ CVar vid]
 
@@ -243,6 +243,9 @@ defvar = VId "CIAODEF" NoInfo
 
 instance Show CEnv where 
   show (CEnv g) = show g 
+
+instance Show Literal where 
+  show x = showSDocUnsafe (ppr x)
 
 instance Show CoreExpr where 
     show x = showSDocUnsafe (ppr x)

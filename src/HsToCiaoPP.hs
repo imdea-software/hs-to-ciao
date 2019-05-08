@@ -12,7 +12,7 @@ plugin = defaultPlugin {
 
 install :: [CommandLineOption] -> [CoreToDo] -> CoreM [CoreToDo]
 install cmd todo = do
-  reinitializeGlobals
+  -- reinitializeGlobals
   liftIO $ putStrLn (show cmd) 
   return (CoreDoPluginPass "Say name" pass : todo)
 
