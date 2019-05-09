@@ -11,7 +11,9 @@ library
   exposed-modules:     HsToCiaoPP, 
                        Language.Ciao.CoreToCiao, 
                        Language.Ciao.Types, 
+                       Language.Ciao.Misc, 
                        Language.Ghc.Misc
+  ghc-options:         -Wall -Werror
   hs-source-dirs:      src
   build-depends:       base, ghc
   build-depends:       unordered-containers, mtl, hashable

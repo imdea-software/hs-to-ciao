@@ -4,6 +4,9 @@
 module Language.Ciao.CoreToCiao where 
 
 import Language.Ciao.Types
+import Language.Ciao.Misc
+import Language.Ghc.Misc
+
 import CoreSyn 
 import TysWiredIn
 import GhcPlugins
@@ -253,8 +256,4 @@ instance Show CoreExpr where
 instance Show Var where 
   show x = showSDocUnsafe (ppr x)
 
-instance Hashable Var where 
-    hashWithSalt _ = getKey . getUnique
 
-traceShow :: Show a => String -> a -> a 
-traceShow msg t = trace ("\n\nTRACE" ++ msg ++ " " ++ show t ) t
