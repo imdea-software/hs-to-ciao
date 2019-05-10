@@ -15,11 +15,11 @@ Add the `-fplugin=HsToCiaoPP` to ghc. E.g., to translate `tests/Merge.hs` run
 
 ```
 # if installed with cabal 
-ghc -fplugin=HsToCiaoPP tests/Repeat.hs
+ghc -fplugin=HsToCiaoPP tests/Merge.hs
 
 
 # if installed with stack 
-stack exec -- ghc -fplugin=HsToCiaoPP tests/Repeat.hs
+stack exec -- ghc -fplugin=HsToCiaoPP tests/Merge.hs
 ```
 
 The cioa translation of the Haskell file will be written in `out/merge.pl`.
