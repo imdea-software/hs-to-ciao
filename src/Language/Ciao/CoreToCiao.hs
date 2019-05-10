@@ -5,14 +5,11 @@ module Language.Ciao.CoreToCiao where
 
 import Language.Ciao.Types
 import Language.Ciao.Misc
-import Language.Ghc.Misc
+import Language.Ghc.Misc ()
 
 import CoreSyn 
 import TysWiredIn
 import GhcPlugins
-import Data.Hashable
-import Unique
-
 import TyCoRep
 
 
@@ -21,11 +18,10 @@ import Data.Char (toUpper)
 import qualified Data.HashMap.Strict as M
 import Control.Monad.State
 
-import Debug.Trace hiding (traceShow)
 
  
 translate :: [CoreBind] -> Program CInfo
-translate bs = Pg $ go initCEnv bs 
+translate = Pg . go initCEnv
   where 
     go _ [] = [] 
     go γ (NonRec x e:bs) = translateBinds (x ++= γ) (x, e) ++  go (x ++= γ) bs 
@@ -33,20 +29,22 @@ translate bs = Pg $ go initCEnv bs
 
 
 translateBinds :: CEnv -> (Var, CoreExpr) -> [Clause CInfo]
-translateBinds γ (x,e) = map (mapTerm hd) r -- if null (cgTerms st) then (CBasic . hd) <$> r else (\c -> CCond (hd c) (cgTerms st)) <$> r
+translateBinds γ (x,e) = map (mapTerm' hd) r
   where 
     (r, st) = runState (exprToTerm γ e) initCGEnv
-    hd r = CFunctor (toFId x) (((CVar . toVId) <$> (reverse $ cgArgs st)) ++ [r])
-    mapTerm f (CBasic t) = CBasic (f t)
-    mapTerm f (CCond t ts) = applyUnifies (f t) ts
+    hd rr = CFunctor (toFId x) (((CVar . toVId) <$> (reverse $ cgArgs st)) ++ [rr])
+    mapTerm' f (CBasic t) = CBasic (f t)
+    mapTerm' f (CCond t ts) = applyUnifies (f t) ts
     
-applyUnifies t ts = let r = go [] t ts in trace ("\n\nRESULT" ++ show r ++ "\nBEFORE\n" ++ show (t,ts)) r 
+applyUnifies :: CTerm i2 -> [CTerm i2] -> Clause i2
+applyUnifies = go []
   where 
     go []  t [] = CBasic t
     go acc t [] = CCond t (reverse acc) 
     go acc t (CUnif x tx: ts) = go (subst x tx <$> acc) (subst x tx t) (subst x tx <$> ts)
     go acc t (c:ts) = go (c:acc) t ts
 
+subst :: VId i1 -> CTerm i2 -> CTerm i2 -> CTerm i2
 subst x ex (CFunctor f ts) = CFunctor f (subst x ex <$> ts)
 subst x ex (CVar y)
   | vname x == vname y = ex 
@@ -74,13 +72,13 @@ initCEnv = CEnv mempty
 exprToTerm :: CEnv -> CoreExpr -> State CGEnv [Clause CInfo]
 exprToTerm γ (Var x)
  = return  (x ?= γ)
-exprToTerm γ (Lit l)
- = return $ [] -- TODO[CBasic $ litToTerm l] 
+exprToTerm _ (Lit _)
+ = return [] -- TODO 
 exprToTerm γ (App f e) | isTypeArg e
   = exprToTerm γ f 
 exprToTerm γ (App f e) | isPredTy (exprType e)
   = exprToTerm γ f 
-exprToTerm γ ee@(App f e) = do 
+exprToTerm γ (App f e) = do 
   fs <- exprToTerm γ f
   es <- exprToTerm γ e
   applyAll fs es
@@ -96,8 +94,8 @@ exprToTerm γ (Tick _ e)
  = exprToTerm γ e 
 exprToTerm γ (Cast e _)
  = exprToTerm γ e 
-exprToTerm γ ee@(Let _ e)
-  = exprToTerm γ e -- error ("Let " ++ show ee) 
+exprToTerm γ (Let _ e)
+  = exprToTerm γ e -- TODO 
 exprToTerm γ (Case e b t alts)
   = concat <$> mapM (caseToTerm γ e b t) alts
 
@@ -119,9 +117,11 @@ applyOne cf ce = do
         (ce1, ce2) = splitClause ce 
 
 
+splitClause :: Clause i -> (CTerm i, [CTerm i])
 splitClause (CBasic t) = (t, [])
 splitClause (CCond t ts) = (t,ts)
 
+addCond :: Clause i -> [CTerm i] -> Clause i
 addCond t [] = t 
 addCond (CBasic t) ts = CCond t ts
 addCond (CCond t ts) ts' = CCond t (ts ++ ts')
@@ -152,8 +152,8 @@ unify x e = modify $ \s -> s{cgUnifies = (x,e):(cgUnifies s)}
 caseToTerm :: CEnv -> CoreExpr -> Var -> Type -> Alt Var -> State CGEnv [Clause CInfo]
 caseToTerm γ _ _ _ (DEFAULT, xs, e) 
   = exprToTerm (foldl (flip (+=)) γ xs) e 
-caseToTerm γ _ _ _ (LitAlt _, _, e)
-  = undefined 
+caseToTerm _ _ _ _ (LitAlt _, _, _)
+  = error "TODO: caseToTerm LitAlt"
 caseToTerm γ ee _ _ (DataAlt c, xs, e)
   | c == nilDataCon 
   = do cee <- exprToTerm γ ee 
@@ -177,31 +177,33 @@ caseToTerm γ ee _ _ (DataAlt c, xs, e)
     traceShow ("CASE = " ++ show e ++ "\nCOND = " ++ show cee  ++ "\nFROM EXPR = " ++ show ee) <$> 
      exprToTerm (foldl (flip (+=)) γ xs) e 
 
+mapTerm :: (CTerm i -> CTerm i) -> Clause i -> Clause i
 mapTerm f (CBasic t) = CBasic $ f t 
 mapTerm f (CCond t ts) = CCond (f t) ts
 
+termCond :: Clause i -> [CTerm i]
 termCond (CBasic t) = [t]
 termCond (CCond t ts) = t:ts  
 
+toCondUnify :: Clause i -> CTerm i -> [CTerm i]
 toCondUnify (CBasic (CVar x)) t = [CUnif x t]
 toCondUnify (CCond (CVar x) ts) t = CUnif x t:ts  
 toCondUnify (CBasic t1) t = [CEq t1 t]
 toCondUnify (CCond t1 ts) t = CEq t1 t:ts
 
 litToTerm :: Literal -> CTerm CInfo
-litToTerm l = error ("Hmmm..." ++ show l)
+litToTerm _ = error ("TODO: litToTerm")
 
 (++=) :: Var -> CEnv -> CEnv 
 x ++= (CEnv γ) = CEnv $ M.insert x (Left $ toFId x) γ
 
 toFId :: Var -> FId CInfo
-toFId x = trace ("arity " ++ show x ++ " == " ++ show (typeArity (varType x))) $ 
-  FId (toFName x) (typeArity (varType x)) (CInfo x)
+toFId x = FId (toFName x) (typeArity (varType x)) (CInfo x)
   where 
     typeArity (ForAllTy _ t) = typeArity t
     typeArity (FunTy tx t) | isPredTy tx = typeArity t 
     typeArity (FunTy _ t)    = 1 + typeArity t 
-    typeArity t              = 1 
+    typeArity _              = 1 
 
 (+=) :: Var -> CEnv -> CEnv 
 x += (CEnv γ) = CEnv $ M.insert x (Right $ VId (toVName x) (CInfo x)) γ
@@ -242,18 +244,9 @@ x ?= γ = case M.lookup x (cIds γ) of
             Just (Left fid)  -> [CBasic $ CFunctor fid []]
             Just (Right vid) -> [CBasic $ CVar vid]
 
+defvar :: VId CInfo            
 defvar = VId "CIAODEF" NoInfo
 
-instance Show CEnv where 
-  show (CEnv g) = show g 
 
-instance Show Literal where 
-  show x = showSDocUnsafe (ppr x)
-
-instance Show CoreExpr where 
-    show x = showSDocUnsafe (ppr x)
-  
-instance Show Var where 
-  show x = showSDocUnsafe (ppr x)
 
 

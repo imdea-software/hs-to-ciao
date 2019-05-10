@@ -1,9 +1,7 @@
 module HsToCiaoPP (plugin) where
 
 import GhcPlugins
-import Language.Ciao.Types
 import Language.Ciao.CoreToCiao
-import Language.Ghc.Misc
 import Data.Char (toLower)
 
 plugin :: Plugin
@@ -12,7 +10,7 @@ plugin = defaultPlugin {
   }
 
 install :: [CommandLineOption] -> [CoreToDo] -> CoreM [CoreToDo]
-install cmd todo =
+install _ todo =
   return (CoreDoPluginPass "CiaoTranslation" pass : todo)
 
 pass :: ModGuts -> CoreM ModGuts
