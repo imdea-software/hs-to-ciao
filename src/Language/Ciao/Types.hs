@@ -1,8 +1,20 @@
 module Language.Ciao.Types where 
 
 import Data.List (intercalate)
+import Var 
 
+-------------------------------------------------------------------------------
+-- | CProgram -----------------------------------------------------------------
+-------------------------------------------------------------------------------
 
+data CInfo = CInfo Var | NoInfo | CILocal
+
+type CProgram = Program CInfo
+type CClause  = Clause  CInfo
+type CCTerm   = CTerm   CInfo
+
+type CFId = FId CInfo
+type CVId = VId CInfo
 -------------------------------------------------------------------------------
 -- | Program Definition -------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -27,6 +39,62 @@ data CTerm i
 data FId i = FId {fname :: String, fArity :: Int, fInfo :: i}
 data VId i = VId {vname :: String, vInfo :: i}
 data Const = CInt Int | CFloat Float | CString String
+
+
+-------------------------------------------------------------------------------
+-- | Clause Manipulation ------------------------------------------------------
+-------------------------------------------------------------------------------
+
+mapTerm :: (CTerm i -> CTerm i) -> Clause i -> Clause i
+mapTerm f (CBasic t)   = CBasic $ f t 
+mapTerm f (CCond t ts) = CCond (f t) ts
+
+applyUnifies :: Clause i -> Clause i
+applyUnifies (CBasic t)   = CBasic t 
+applyUnifies (CCond xt xts) = go [] xt xts 
+  where 
+    go []  t [] = CBasic t
+    go acc t [] = CCond t (reverse acc) 
+    go acc t (CUnif x tx: ts) = go (subst x tx <$> acc) (subst x tx t) (subst x tx <$> ts)
+    go acc t (c:ts)           = go (c:acc) t ts
+
+splitClause :: Clause i -> (CTerm i, [CTerm i])
+splitClause (CBasic t)   = (t, [])
+splitClause (CCond t ts) = (t,ts)
+
+addCond :: Clause i -> [CTerm i] -> Clause i
+addCond t [] = t 
+addCond (CBasic t)   cs = CCond t cs
+addCond (CCond t ts) cs = CCond t (ts ++ cs)
+
+termCond :: Clause i -> [CTerm i]
+termCond (CBasic t)   = [t]
+termCond (CCond t ts) = t:ts  
+
+
+-- turns head of the term to unification, when possible (i.e, when head is a variable)
+toCondUnify :: Clause i -> CTerm i -> [CTerm i]
+toCondUnify (CBasic (CVar x)) t = [CUnif x t]
+toCondUnify (CCond (CVar x) ts) t = CUnif x t:ts  
+toCondUnify (CBasic t1) t = [CEq t1 t]
+toCondUnify (CCond t1 ts) t = CEq t1 t:ts
+
+-------------------------------------------------------------------------------
+-- | Term Manipulation --------------------------------------------------------
+-------------------------------------------------------------------------------
+
+subst :: VId i -> CTerm i -> CTerm i -> CTerm i
+subst x ex (CFunctor f ts) = CFunctor f (subst x ex <$> ts)
+subst x ex (CVar y)
+  | vname x == vname y = ex 
+  | otherwise          = CVar y 
+subst x ex (CListCons es) = CListCons (subst x ex <$> es)
+subst x ex (CLessEq es)   = CLessEq (subst x ex <$> es)
+subst x ex (CEq t1 t2)    = CEq (subst x ex t1) (subst x ex t2)
+subst x ex (CUnif y e)    = CUnif y (subst x ex e)
+subst x ex (CNot t)       = CNot (subst x ex t)
+subst _ _ (CLit c) = CLit c 
+subst _ _ CListEmp = CListEmp
 
 
 -------------------------------------------------------------------------------

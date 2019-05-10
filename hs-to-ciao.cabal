@@ -12,6 +12,8 @@ library
                        Language.Ciao.CoreToCiao, 
                        Language.Ciao.Types, 
                        Language.Ciao.Misc, 
+                       Language.Ciao.CGMonad, 
+                       Language.Ciao.CEnv, 
                        Language.Ghc.Misc
   ghc-options:         -Wall -Werror
   hs-source-dirs:      src
