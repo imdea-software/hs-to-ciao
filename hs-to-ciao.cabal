@@ -17,6 +17,6 @@ library
                        Language.Ghc.Misc
   ghc-options:         -Wall -Werror
   hs-source-dirs:      src
-  build-depends:       base, ghc
+  build-depends:       base, ghc >= 8.4.4
   build-depends:       unordered-containers, mtl, hashable
   default-language:    Haskell2010

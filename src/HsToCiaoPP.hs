@@ -19,7 +19,7 @@ pass modguts= do
     let hsBinds  = mg_binds modguts
     let ciaoCore = translate hsBinds  
     -- Print initial Haskell Binds 
-    liftIO $ putStrLn $ "Haskell Binds:"
+    liftIO $ putStrLn $ "Haskell Binds:" 
     liftIO $ putStrLn $ show hsBinds 
     -- Print Ciao translation
     liftIO $ putStrLn $ "Ciao Code:"
@@ -30,3 +30,5 @@ pass modguts= do
 
 ciaoFileName :: String -> String 
 ciaoFileName name = "./out/" ++ map toLower name ++ ".pl"
+
+
