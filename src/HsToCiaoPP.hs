@@ -19,10 +19,10 @@ pass modguts= do
     let hsBinds  = mg_binds modguts
     let ciaoCore = translate hsBinds  
     -- Print initial Haskell Binds 
-    liftIO $ putStrLn $ "Haskell Binds:" 
+    liftIO $ putStrLn $ "\n--- Haskell Binds: ---\n" 
     liftIO $ putStrLn $ show hsBinds 
     -- Print Ciao translation
-    liftIO $ putStrLn $ "Ciao Code:"
+    liftIO $ putStrLn $ "\n--- Ciao Code: ---\n"
     liftIO $ putStrLn $ show ciaoCore  
     -- Write tranlsation into the .pl file 
     liftIO $ writeFile (ciaoFileName name) (show ciaoCore)
