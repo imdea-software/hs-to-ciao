@@ -5,6 +5,7 @@
 module Language.Ghc.Misc where 
 
 import Outputable
+import TyCoRep 
 import CoreSyn 
 import PprCore ()
 import Data.Hashable
@@ -13,6 +14,12 @@ import Var
 import Literal
 
 
+instance Show AltCon where 
+  show = showSDocUnsafe . ppr 
+
+
+instance Show Type where 
+    show = showSDocUnsafe . ppr 
 instance Show CoreBind where 
   show = showSDocUnsafe . ppr 
 instance Hashable Var where 

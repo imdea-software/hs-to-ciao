@@ -30,7 +30,7 @@ translateBinds γ (x,e) = (applyUnifies . mapTerm makeHead) <$> r
     (r, st)      = runCG (exprToTerm γ e) 
     makeHead res = CFunctor (toFId x) (((CVar . toVId) <$> (reverse $ cgArgs st)) ++ [res])
 
-
+-- CoreExpr defined here: http://hackage.haskell.org/package/ghc-8.6.5/docs/CoreSyn.html
 exprToTerm :: CEnv -> CoreExpr -> CG [CClause]
 exprToTerm γ (Var x)
  = return  (x ?= γ)
@@ -42,11 +42,22 @@ exprToTerm γ (App f e)
 exprToTerm γ (App f e) = do 
   fs <- exprToTerm γ f
   es <- exprToTerm γ e
-  applyAll fs es
-exprToTerm γ (Lam x e)
-  | isTyVar x = exprToTerm γ e 
+  applyAll (traceShow ("FS = " ++ show f) fs) es
+exprToTerm γ ee@(Lam x e)
+  | isTyVar x = exprToTerm γ $ traceShow ("Lam:isTyVar  on " ++ 
+    "\n\nInitial Expression \n\n" ++ show ee ++ 
+    "\n γ = " ++ show γ ++
+    "\n x = "  ++ show x ++
+    "\n e = " ++ show e   
+    ) e 
   | isPredTy (varType x) = exprToTerm γ e 
-  | otherwise = addVar x >> exprToTerm (x += γ) e 
+  | otherwise = do addVar x 
+                   exprToTerm (x += γ)  $ traceShow ("Lam:otherwise  on " ++ 
+                    "\n\nInitial Expression \n\n" ++ show ee ++ 
+                    "\n γ = " ++ show γ ++
+                    "\n x = "  ++ show x ++
+                    "\n e = " ++ show e   
+                     ) e 
 exprToTerm _ (Coercion _) 
  = return [] 
 exprToTerm _ (Type _) 
@@ -57,8 +68,15 @@ exprToTerm γ (Cast e _)
  = exprToTerm γ e 
 exprToTerm γ (Let _ e)
   = exprToTerm γ e -- TODO 
-exprToTerm γ (Case e b t alts)
-  = concat <$> mapM (caseToTerm γ e b t) alts
+exprToTerm γ ee@(Case e b t alts)
+  = concat <$> (mapM (caseToTerm γ (traceShow ("Case  on " ++ 
+               "\n\nInitial Expression \n\n" ++ show ee ++ 
+               "\n γ = " ++ show γ ++
+               "\n e = " ++ show e ++    
+               "\n b = " ++ show b ++    
+               "\n t = " ++ show t ++    
+               "\n alts = " ++ show alts   
+                ) e) b t) alts)
 
 
 applyAll :: [CClause] -> [CClause] -> CG [CClause]

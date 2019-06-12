@@ -10,7 +10,7 @@ import TyCoRep
 import           Data.Char (toUpper)
 import qualified Data.HashMap.Strict as M
 
-data CEnv = CEnv {cIds :: M.HashMap Var (Either CFId CVId)}
+data CEnv = CEnv {cIds :: M.HashMap Var (Either CFId CVId)} deriving (Show)
 
 initCEnv :: CEnv
 initCEnv = CEnv mempty
