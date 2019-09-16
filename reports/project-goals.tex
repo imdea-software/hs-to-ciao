@@ -1,0 +1,95 @@
+\documentclass[11pt]{article}
+
+% Margins the way I like them
+\usepackage[top=0.8in, bottom=0.8in, left=1.2in, right=1.2in]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor, graphicx, tikz}
+
+\usepackage[backend=biber, style=alphabetic]{biblatex}
+\addbibresource{references.bib}
+
+\setlength\parindent{0pt}
+
+\usepackage[hidelinks]{hyperref}
+\hypersetup{%
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=magenta
+  }
+  
+\title{
+  Haskell to Ciao: Translation of Haskell code for~Static~Resource~Analysis~in~CiaoPP}
+\author{David Munuera Mazarro \\ \texttt{david.munuera@imdea.org}}
+\date{}
+\begin{document}
+\pagenumbering{gobble}
+
+\pagebreak
+
+\begin{minipage}{1.0\linewidth}
+
+  {\hspace{4.6cm}
+    \includegraphics[scale=0.2]{hs-to-ciao.png}}
+
+  \vspace{-1.3cm}
+
+\maketitle
+  
+\end{minipage}
+
+The goals of this project are:
+\begin{itemize}
+\item Creating a transpiler (Source-to-Source compiler) that takes Haskell code (or, more specifically, GHC Core code)
+  and yields code for an equivalent Ciao Prolog program
+\item Perform a static resource analysis
+  running the CiaoPP engine over the Ciao code provided by the translation
+\item Draw conclusions from the analysis results
+  and take them to the original Haskell domain from which we started
+\end{itemize}
+The utmost objective of the project is to be able to take some Haskell code,
+perhaps meeting some conditions imposed by the limitations of the translation,
+and obtain resource usage properties inferred by
+the CiaoPP engine accurately matching said Haskell code. \\
+
+There are a few challenges posed by this task.
+First of all, the translation has to be \textbf{correct},
+because otherwise the results and conclusions taken from the analysis
+would only be valid for the Ciao code resulting from the translation,
+and not necessarily all the way back to the original code. In addition,
+we should aim for the translation to be \textbf{as complete as possible} in order
+to be able to analyze real, useful Haskell programs and not just
+little example snippets.
+But there may not be an immediate translation for certain basic Haskell features
+into basic Ciao features (for example, Haskell's basic types are
+different from Ciao's), and for every such situation we encounter,
+we will either have to:
+
+\begin{enumerate}
+\item[a)] Find a workaround translation that remains compatible with CiaoPP, or
+\item[b)] If the above proves to be difficult or not feasible,
+  carry the burden into the transpiler and regard it as a limitation
+\end{enumerate}
+
+Moving back to the correctness of the translation. Ideally, the translation
+should be formally proven to be correct. However, I do not currently have
+the theoretical knowledge to do so, and the way I intend to approach
+the project is by trial-and-error; using the transpiler to translate example programs,
+check that they behave as they should, and if that's not the case, tweak the
+transpiler as needed until the behavior of the translation matches that
+of the original program.
+
+% - Traducción de programas Haskell a claúsulas de Horn
+% - Análisis de coste mediante CiaoPP, mejoras
+% - Reflexión de los resultados en el programa original
+% - Experimentos, generación de resultados
+% - Documentación
+\printbibliography
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-command-extra-options: "-shell-escape"
+%%% End:
