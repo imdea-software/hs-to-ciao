@@ -1,10 +1,10 @@
 12/9
 
 - TODO
-  - [ ] keep reading LYAH
-  - [ ] read about Core GHC 
+  - [X] keep reading LYAH
+  - [X] read about Core GHC 
   - [ ] come up with an example and manual translation
-  - [ ] show the bigger picture of what where we're trying to get (resource analysis of Haskell source)
+  - [X] sketch the bigger picture of where we're trying to get (resource analysis of Haskell source)
 
 5/9
 
