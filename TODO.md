@@ -2,7 +2,7 @@
 
 - TODO
   - [ ] keep reading LYAH (λ more applicatives, monoids and monads! λ)
-  - [ ] vector graphic for the "bigger picture"
+  - [x] vector graphic for the "bigger picture"
   - [ ] read about Core GHC
       - take a look at specialisations and try to understand how Core desugars
         typeclases
