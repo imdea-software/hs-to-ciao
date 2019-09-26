@@ -1,3 +1,12 @@
+26/9
+
+- TODO
+  - [ ] schedule a meeting with the Ciao team for seeing what kind of resource analysis we want (and so they teach me how to use CiaoPP)
+  - [ ] implement function to output Core bindings into a file
+  - [ ] keep reading LYAH
+  - [ ] one more example of manual translation
+  - [ ] start translation pseudocode that works (at least) for these two examples
+  
 19/9
 
 - TODO
