@@ -1,12 +1,13 @@
 19/9
 
 - TODO
-  - [ ] keep reading LYAH (λ more applicatives, monoids and monads! λ)
+  - [x] keep reading LYAH (λ more applicatives, ~~monoids and monads!~~ λ)
+      - applicatives turned out to be harder than expected to grasp in certain ways
   - [x] vector graphic for the "bigger picture"
-  - [ ] read about Core GHC
+  - [x] read about Core GHC
       - take a look at specialisations and try to understand how Core desugars
         typeclases
-  - [ ] plan for the example, manual translation
+  - [x] plan for the example, manual translation
       - the plan is: code basic plain Haskell example (list reverse or similar),
         generate Core code, see how to translate into Prolog
   
