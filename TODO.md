@@ -6,6 +6,7 @@
   - [ ] keep reading LYAH
   - [ ] one more example of manual translation
   - [ ] start translation pseudocode that works (at least) for these two examples
+  - [ ] update diagram with a user (which will be asking the analysis queries) and -fplugin=HsToCiaoPP 
   
 19/9
 
