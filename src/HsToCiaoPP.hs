@@ -23,11 +23,16 @@ pass modguts= do
     liftIO $ putStrLn $ show hsBinds 
     -- Print Ciao translation
     liftIO $ putStrLn $ "\n--- Ciao Code: ---\n"
-    liftIO $ putStrLn $ show ciaoCore  
-    -- Write tranlsation into the .pl file 
+    liftIO $ putStrLn $ show ciaoCore
+    -- Write Core bindings into the .core file
+    liftIO $ writeFile (coreFileName name) (show hsBinds)
+    -- Write translation into the .pl file
     liftIO $ writeFile (ciaoFileName name) (show ciaoCore)
     bindsOnlyPass (mapM return) modguts
 
+coreFileName :: String -> String
+coreFileName name = "./out/" ++ map toLower name ++ ".core"
+                  
 ciaoFileName :: String -> String 
 ciaoFileName name = "./out/" ++ map toLower name ++ ".pl"
 
