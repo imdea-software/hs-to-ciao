@@ -2,10 +2,12 @@
 
 - TODO
   - [ ] schedule a meeting with the Ciao team for seeing what kind of resource analysis we want (and so they teach me how to use CiaoPP)
+    - I didn't get a reply :(
   - [x] implement function to output Core bindings into a file
   - [x] keep reading LYAH
   - [ ] one more example of manual translation
-  - [ ] start translation pseudocode that works (at least) for these two examples
+    - ↑ had a bit of trouble with this one
+    - [ ] start translation pseudocode that works (at least) for these two examples
   - [x] update diagram with a user (which will be asking the analysis queries) and -fplugin=HsToCiaoPP 
   
 19/9
