@@ -4,7 +4,7 @@
   - [ ] one more example of manual translation
   - [ ] start translation pseudocode that works (at least) for these two examples
   - [ ] keep reading LYAH
-  - [ ] read the paper on higher order programming Prolog
+  - [x] read the paper on higher order programming Prolog
   - [ ] try to read CiaoPP manual
 
 26/9
