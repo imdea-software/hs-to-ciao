@@ -1,8 +1,8 @@
 3/10
 
 - TODO
-  - [ ] one more example of manual translation
-    - [ ] start translation pseudocode that works (at least) for these two examples
+  - [x] one more example of manual translation
+    - [x] start translation pseudocode that works (at least) for these two examples
   - [x] keep reading LYAH
   - [x] read the paper on higher order programming Prolog
   - [ ] try to read CiaoPP manual
