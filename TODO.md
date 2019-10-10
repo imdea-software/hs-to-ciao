@@ -1,3 +1,17 @@
+IN THE FUTURE:
+- [ ] more concrete pseudocode
+
+10/10
+
+- TODO
+  - [ ] keep reading LYAH
+  - [ ] write the report for my university
+  - [ ] check out the Programming with Higher-Order Logic book
+  - [ ] try to install CiaoPP
+    - [ ] try to read CiaoPP manual
+  - [ ] manual translation for map-reduce
+  - [ ] print bindings in a more explicit manner (mess with the current code)
+
 3/10
 
 - TODO
