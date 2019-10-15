@@ -1,10 +1,24 @@
+IN THE FUTURE:
+- [ ] more concrete pseudocode
+
+10/10
+
+- TODO
+  - [ ] keep reading LYAH
+  - [ ] write the report for my university
+  - [ ] check out the Programming with Higher-Order Logic book
+  - [ ] try to install CiaoPP
+    - [ ] try to read CiaoPP manual
+  - [ ] manual translation for map-reduce
+  - [ ] print bindings in a more explicit manner (mess with the current code)
+
 3/10
 
 - TODO
-  - [ ] one more example of manual translation
-  - [ ] start translation pseudocode that works (at least) for these two examples
-  - [ ] keep reading LYAH
-  - [ ] read the paper on higher order programming Prolog
+  - [x] one more example of manual translation
+    - [x] start translation pseudocode that works (at least) for these two examples
+  - [x] keep reading LYAH
+  - [x] read the paper on higher order programming Prolog
   - [ ] try to read CiaoPP manual
 
 26/9
