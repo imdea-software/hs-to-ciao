@@ -5,8 +5,8 @@ IN THE FUTURE:
 
 - TODO
   - [ ] keep reading LYAH
-  - [ ] write the report for my university
-  - [ ] check out the Programming with Higher-Order Logic book
+  - [x] write the report for my university
+  - [x] check out the Programming with Higher-Order Logic book
   - [ ] try to install CiaoPP
     - [ ] try to read CiaoPP manual
   - [ ] manual translation for map-reduce
