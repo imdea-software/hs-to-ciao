@@ -4,11 +4,12 @@ IN THE FUTURE:
 10/10
 
 - TODO
-  - [ ] keep reading LYAH
+  - [x] keep reading LYAH
   - [x] write the report for my university
   - [x] check out the Programming with Higher-Order Logic book
   - [ ] try to install CiaoPP
-    - [ ] try to read CiaoPP manual
+    - [x] try to read CiaoPP manual
+      - ↑ met with Maximiliano last week and he explained the basics of code analysis
   - [ ] manual translation for map-reduce
   - [ ] print bindings in a more explicit manner (mess with the current code)
 
