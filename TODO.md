@@ -1,5 +1,15 @@
 IN THE FUTURE:
-- [ ] more concrete pseudocode
+
+- [ ] Make the 3 manual examples work with CiaoPP analysis
+
+24/10
+
+- TODO
+  - [ ] keep reading LYAH/Graham
+  - [ ] check if the manual translation for map-reduce is correct
+    - [ ] fix my Ciao/CiaoPP installation
+  - [ ] more concrete pseudocode
+    - [ ] get cleaner print bindings (mess with the current code)
 
 10/10
 
