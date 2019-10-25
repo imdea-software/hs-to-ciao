@@ -7,7 +7,7 @@ IN THE FUTURE:
 - TODO
   - [ ] keep reading LYAH/Graham
   - [ ] check if the manual translation for map-reduce is correct
-    - [ ] fix my Ciao/CiaoPP installation
+    - [x] fix my Ciao/CiaoPP installation
   - [ ] more concrete pseudocode
     - [ ] get cleaner print bindings (mess with the current code)
 
