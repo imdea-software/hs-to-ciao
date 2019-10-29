@@ -6,7 +6,8 @@ IN THE FUTURE:
 
 - TODO
   - [ ] keep reading LYAH/Graham
-  - [ ] check if the manual translation for map-reduce is correct
+  - [ ] migrate previous manual translations to Ciao's functional syntax
+  - [x] check if the manual translation for map-reduce is correct
     - [x] fix my Ciao/CiaoPP installation
   - [ ] more concrete pseudocode
     - [ ] get cleaner print bindings (mess with the current code)
