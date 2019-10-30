@@ -11,7 +11,8 @@ IN THE FUTURE:
   - [x] check if the manual translation for map-reduce is correct
     - [x] fix my Ciao/CiaoPP installation
   - [ ] more concrete pseudocode
-    - [ ] get cleaner print bindings (mess with the current code)
+    - [x] get cleaner print bindings (mess with the current code)
+      - ↑ I didn't have to change anything in the end, and I think it's clean enough
 
 10/10
 
