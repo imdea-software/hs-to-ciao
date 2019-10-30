@@ -6,7 +6,7 @@ IN THE FUTURE:
 
 - TODO
   - [x] keep reading LYAH/Graham
-  - [ ] migrate previous manual translations to Ciao's functional syntax
+  - [x] migrate previous manual translations to Ciao's functional syntax
   - [x] discussed with the Ciao team, and refined the manual translation model; we should be getting better, more accurate and direct translations. We now have non ad-hoc currying, and I think we're closer to supporting types
   - [x] check if the manual translation for map-reduce is correct
     - [x] fix my Ciao/CiaoPP installation
