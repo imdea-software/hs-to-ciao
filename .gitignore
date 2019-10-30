@@ -21,6 +21,9 @@ cabal.project.local~
 .HTF/
 .ghc.environment.*
 
+*.po
+*.itf
+*.core
 reports/*
 !reports/*.pdf
 !reports/*.tex
