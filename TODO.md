@@ -2,6 +2,14 @@ IN THE FUTURE:
 
 - [ ] Make the 3 manual examples work with CiaoPP analysis
 
+31/10
+
+- TODO
+  - [ ] start reading Graham's
+  - [ ] meet with the Ciao people (perform cost analysis over my 3 examples)
+  - [ ] try to start the implementation
+  - [ ] more concrete pseudocode
+    
 24/10
 
 - TODO
