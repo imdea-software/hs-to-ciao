@@ -5,8 +5,7 @@ IN THE FUTURE:
 31/10
 
 - TODO
-  - [ ] start reading Graham's
-  - [ ] meet with the Ciao people (perform cost analysis over my 3 examples)
+  - [x] start reading Graham's
   - [ ] try to start the implementation
   - [ ] more concrete pseudocode
     
