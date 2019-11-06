@@ -8,6 +8,7 @@ IN THE FUTURE:
   - [x] start reading Graham's
   - [ ] try to start the implementation
   - [ ] more concrete pseudocode
+    - point-free style will not be as immediate to translate as I thought; I need to ask you a few things
     
 24/10
 
