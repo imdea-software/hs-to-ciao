@@ -2,6 +2,14 @@ IN THE FUTURE:
 
 - [ ] Make the 3 manual examples work with CiaoPP analysis
 
+7/11
+
+- TODO
+  - [ ] keep implementing the translate function
+    - [ ] make booleans a special case
+    - [ ] take a look at the point-free example (lambdas in Ciao? or add the needed argument?)
+  - [ ] define the CiaoPred syntax so it covers the manual examples
+
 31/10
 
 - TODO
