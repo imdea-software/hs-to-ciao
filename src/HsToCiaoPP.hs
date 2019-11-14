@@ -27,9 +27,17 @@ pass modguts= do
     -- Write Core bindings into the .core file
     liftIO $ writeFile (coreFileName name) (show hsBinds)
     -- Write translation into the .pl file
-    liftIO $ writeFile (ciaoFileName name) (show ciaoCore)
+    liftIO $ writeFile (ciaoFileName name) ciaoModuleHeader
+    liftIO $ appendFile (ciaoFileName name) (show ciaoCore)
     bindsOnlyPass (mapM return) modguts
 
+-- things required for the Ciao programs to work as expected
+-- (module dependencies  and such), or whatever that goes before
+-- the actual code, really
+ciaoModuleHeader :: String
+ciaoModuleHeader = ":- module(_,_,[functional, hiord]).\n" ++
+                   ":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').\n\n"
+                  
 coreFileName :: String -> String
 coreFileName name = "./out/" ++ map toLower name ++ ".core"
                   
