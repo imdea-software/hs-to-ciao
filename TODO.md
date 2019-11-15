@@ -8,6 +8,7 @@ IN THE FUTURE:
   - [ ] keep implementing the translate function
     - [ ] make booleans a special case
     - [ ] take a look at the point-free example (lambdas in Ciao? or add the needed argument?)
+      - [ ] how is a function's type signatura encoded within CiaoSyn?
   - [ ] define the CiaoPred syntax so it covers the manual examples
 
 31/10
