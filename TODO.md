@@ -9,7 +9,7 @@ IN THE FUTURE:
     - [ ] make booleans a special case
     - [ ] take a look at the point-free example (lambdas in Ciao? or add the needed argument?)
       - [ ] how is a function's type signature encoded within CiaoSyn?
-  - [ ] define the CiaoPred syntax so it covers the manual examples
+  - [x] define the CiaoPred syntax so it covers the manual examples
 
 31/10
 
