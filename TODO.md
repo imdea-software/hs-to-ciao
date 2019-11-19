@@ -7,7 +7,10 @@ IN THE FUTURE:
 - TODO
   - [ ] keep implementing the translate function
     - [ ] make booleans a special case
-    - [ ] take a look at the point-free example (lambdas in Ciao? or add the needed argument?)
+    - [x] take a look at the point-free example (lambdas in Ciao? ~~or add the needed argument?~~)
+      - I've been discussing lambdas with José from the Ciao team, and they're going to make a few changes/additions;
+      so I think I'll try to use lambdas and the type signatura inspection to find out how many arguments are missing.
+      This could all be subject to change though.
       - [ ] how is a function's type signature encoded within CiaoSyn?
   - [x] define the CiaoPred syntax so it covers the manual examples
 
