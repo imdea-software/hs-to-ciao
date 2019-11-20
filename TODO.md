@@ -13,6 +13,8 @@ IN THE FUTURE:
       This could all be subject to change though.
       - [ ] how is a function's type signature encoded within CiaoSyn?
   - [x] define the CiaoPred syntax so it covers the manual examples
+  - [x] created document `TRANSLATION-IDEAS.md` at the topmost folder of the project going over the assumptions/decisions
+  that are being taken for the translation process; this way both the Ciao team and Niki can tell what's going on and see if   everything is in check
 
 31/10
 
