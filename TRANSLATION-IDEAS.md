@@ -26,7 +26,7 @@ filterAndFoldInts(Filt, F, Base) = {''(X) := ~compose(~foldl(F, Base), ~filter(F
 
 ## Currying
 
-By default, all Haskell functions represented in GHC's Core via `CoreSyn` are curried. We probably *could* bring them into
+By default, all Haskell functions represented in GHC's Core via [`CoreSyn`](https://downloads.haskell.org/ghc/latest/docs/html/libraries/ghc-8.8.1/CoreSyn.html) are curried. We probably *could* bring them into
 Ciao directly that way, but for easier readability and (maybe) ease of analysis, I'm going to try and inspect the 
 type signature of the functions represented in Core and translate them as uncurried as possible, 
 but not further. For example, the previous `filterAndFoldInts` example could be taken one step further and
