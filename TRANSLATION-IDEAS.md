@@ -1,6 +1,23 @@
 **All of these guidelines are current ideas and are pretty much subject to change depending on both this project's progress
 and Ciao's development. Suggestions are, of course, welcome!**
 
+## Prelude for Ciao
+
+In the [Dev](https://github.com/imdea-software/hs-to-ciao/tree/dev) branch, 
+under the [hs-to-ciao/lib](https://github.com/imdea-software/hs-to-ciao/tree/dev/lib) folder, is a file called 
+[ciao_prelude.pl](https://github.com/imdea-software/hs-to-ciao/tree/dev/lib/ciao_prelude.pl) 
+which holds some standard predicate/function
+definitions that are used throughout the examples on which I'm working. Eventually, I think it should be
+great to translate the whole or most of the Haskell Prelude, since they are functions used in most programs
+and in order to make any kind of analysis over a minimally useful Haskell program, we're going to need
+those functions defined in Ciao. This is a starting point for that.
+
+The translation of the Prelude could happen either manually, and translate the equivalent
+of every function to Ciao by hand, or automatically and then supervise and correct the output
+of the translation for the functions. I think we should take the second approach once the translation
+is at a sufficiently advanced state, and translate manually some of the functions as needed for
+testing and checking the development of the translation program/algorithm itself.
+
 ## Lambdas
 
 We have the following function:
