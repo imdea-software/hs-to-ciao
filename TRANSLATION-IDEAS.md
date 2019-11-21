@@ -76,12 +76,12 @@ While discussing with José, we came to the realization that given the following
 ```prolog
 p := (''(X) := X+1).
 ```
-(which is supposed to translate the Haskell lambda `\x -> x+1`,
+(which is supposed to translate the Haskell lambda `\x -> x+1`),
 trying to evaluate the query:
 ```prolog
 ?- R = ~p(5).
 ```
-The attempted query gives off an error. With the aforementioned curly braces syntax wrapping the lambda abstraction, 
+gives off an error. With the aforementioned curly braces syntax wrapping the lambda abstraction, 
 you should be able to first assign the lambda to a variable,
 and then evaluate said lambda, like this:
 ```prolog
