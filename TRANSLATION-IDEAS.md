@@ -18,6 +18,37 @@ of the translation for the functions. I think we should take the second approach
 is at a sufficiently advanced state, and translate manually some of the functions as needed for
 testing and checking the development of the translation program/algorithm itself.
 
+## Case
+
+Since the `case` structure is one of the primitive elements in GHC's Core,
+it's in need of an equivalent Ciao representation for the translation.
+Given the following simple Haskell example:
+
+```haskell
+foo x = 3 + case x of
+  1 -> 2
+  2 -> 4
+  3 -> 6
+```
+the translation would be the following:
+```prolog
+foo(1) := 3 + 2.
+foo(2) := 3 + 4.
+foo(3) := 3 + 6.
+```
+since it's just performing a syntax pattern-match. After looking at it from different examples,
+and given that Core will only use the `case` structure for data constructors and literals, this should suffice.
+However, while I was thinking about this matter and discussing with José, I gave support within the 
+[CiaoSyn.hs](https://github.com/imdea-software/hs-to-ciao/blob/dev/src/Dev/CiaoSyn.hs) file
+(which holds the definition for the Ciao syntax we're targeting) to the following way of representing the `case`
+in Ciao:
+```prolog
+foo(X) := 3 + (X=1 ? 2
+             | X=2 ? 4
+             | X=3 ? 6).
+```
+which could come in handy if separating the predicate in different clauses for syntax pattern-matching is not enough.
+
 ## Lambdas
 
 We have the following function:
