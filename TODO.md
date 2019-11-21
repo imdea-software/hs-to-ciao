@@ -2,6 +2,15 @@ IN THE FUTURE:
 
 - [ ] Make the 3 manual examples work with CiaoPP analysis
 
+21/11
+
+- TODO
+  - [ ] keep implementing the translate function
+    - [ ] make it so that the foldl Core translates into the example term I constructed
+    - [ ] afterwards, encode the other two manual examples within CiaoSyn
+    - [ ] make booleans a special case
+  - [ ] ask/figure if the empty list is a functor in Ciao
+
 7/11
 
 - TODO
@@ -11,7 +20,7 @@ IN THE FUTURE:
       - I've been discussing lambdas with José from the Ciao team, and they're going to make a few changes/additions;
       so I think I'll try to use lambdas and the type signatura inspection to find out how many arguments are missing.
       This could all be subject to change though.
-      - [ ] how is a function's type signature encoded within CiaoSyn?
+      - [x] how is a function's type signature encoded within CiaoSyn?
   - [x] define the CiaoPred syntax so it covers the manual examples
   - [x] created document [TRANSLATION-IDEAS.md](https://github.com/imdea-software/hs-to-ciao/blob/master/TRANSLATION-IDEAS.md) at the topmost folder of the project going over the assumptions/decisions
   that are being taken for the translation process; this way both the Ciao team and Niki can tell what's going on and see if   everything is in check
