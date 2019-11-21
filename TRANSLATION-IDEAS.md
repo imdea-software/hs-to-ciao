@@ -72,6 +72,22 @@ filterAndFoldInts(Filt, F, Base) = {''(X) := ~compose(~foldl(F, Base), ~filter(F
 ```
 (assuming that `compose`, `foldl` and `filter` are already existing predicates)
 
+While discussing with José, we came to the realization that given the following predicate:
+```prolog
+p := (''(X) := X+1).
+```
+(which is supposed to translate the Haskell lambda `\x -> x+1`,
+trying to evaluate the query:
+```prolog
+?- R = ~p(5).
+```
+The attempted query gives off an error. With the aforementioned curly braces syntax wrapping the lambda abstraction, 
+you should be able to first assign the lambda to a variable,
+and then evaluate said lambda, like this:
+```prolog
+?- P = ~p, R = ~P(5).
+```
+
 ## Currying
 
 By default, all Haskell functions represented in GHC's Core via [`CoreSyn`](https://downloads.haskell.org/ghc/latest/docs/html/libraries/ghc-8.8.1/CoreSyn.html) are curried. We probably *could* bring them into
