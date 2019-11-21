@@ -39,7 +39,7 @@ type CiaoBody = [CiaoTerm]
 
 -- NOTE: No support (yet) for infix variations of operators; they
 -- will be used as standard prefix functors
-data CiaoTerm = CiaoTerm CiaoFunctor [CiaoArg] | CiaoEmptyList | CiaoNumber Int | CiaoCase CiaoId [(CiaoTerm, CiaoTerm)]
+data CiaoTerm = CiaoTerm CiaoFunctor [CiaoArg] | CiaoNumber Int | CiaoCase CiaoId [(CiaoTerm, CiaoTerm)]
 instance Show CiaoTerm where
     show (CiaoTerm functor arglist) =
         let functorname = show functor in case functorname of
@@ -48,7 +48,6 @@ instance Show CiaoTerm where
         _ -> case arglist of
                [] -> functorname
                _ -> functorname ++ "(" ++ (intercalate "," $ map show arglist) ++ ")"
-    show CiaoEmptyList = "[]"
     show (CiaoNumber x) = show x
     show (CiaoCase _ []) = "" -- dummy show, you shouldn't have an empty case
     show (CiaoCase id altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show id ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
