@@ -9,7 +9,8 @@ IN THE FUTURE:
     - [ ] make it so that the foldl Core translates into the example term I constructed
     - [ ] afterwards, encode the other two manual examples within CiaoSyn
     - [ ] make booleans a special case
-  - [ ] ask/figure if the empty list is a functor in Ciao
+  - [x] ask/figure if the empty list is a functor in Ciao
+    - it is :)
 
 7/11
 
