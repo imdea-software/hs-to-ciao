@@ -18,9 +18,6 @@ translateBind bind =
             show name == "$trModule" -> [] -- This returns the empty predicate
             _ -> CiaoClause name args
                 where args = unfoldLam exprBind
-
-bools :: String
-bools = "bool(X,T) :- (X -> T=true ; T=false)."
                              
 unfoldLam :: Expr b -> ([b], Expr b)
 unfoldLam  = go

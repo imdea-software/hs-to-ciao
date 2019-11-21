@@ -1,5 +1,12 @@
+module CiaoSyn where
+
 import Data.List (intercalate)
     
+data CiaoPred = CPredC CiaoPredC | CPredF CiaoPredF
+instance Show CiaoPred where
+    show (CPredC pred) = show pred
+    show (CPredF pred) = show pred
+              
 newtype CiaoPredC = CiaoPredC [CiaoClause]
 instance Show CiaoPredC where
     show (CiaoPredC []) = ""
