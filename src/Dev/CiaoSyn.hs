@@ -21,13 +21,17 @@ data CiaoFunction = CiaoFunction CiaoHead CiaoFunctionBody
 instance Show CiaoFunction where
     show (CiaoFunction head fcall) = show head ++ " := " ++ show fcall ++ "."
     
-data CiaoFunctionBody = CiaoFBTerm CiaoTerm | CiaoFBCall CiaoFunctor [CiaoFunctionBody]
+data CiaoFunctionBody = CiaoFBTerm CiaoFunctor [CiaoFunctionBody] | CiaoFBCall CiaoFunctionCall
 instance Show CiaoFunctionBody where
-    show (CiaoFBCall name arglist) =
+    show (CiaoFBTerm name arglist) =
         case arglist of
-          [] -> "HOLA" ++ show name
-          _ -> "~" ++ (show name) ++ "(" ++ (intercalate "," $ map show arglist) ++ ")"
-    show (CiaoFBTerm term) = show term
+          [] -> show name
+          _ -> show name ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
+    show (CiaoFBCall funcall) = show funcall
+
+data CiaoFunctionCall = CiaoFunctionCall CiaoFunctor [CiaoFunctionBody]
+instance Show CiaoFunctionCall where
+    show (CiaoFunctionCall name arglist) = "~" ++ (show name) ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
 
 data CiaoClause = CiaoClause CiaoHead CiaoBody
 instance Show CiaoClause where
@@ -47,7 +51,7 @@ instance Show CiaoTerm where
         ":" -> ".(" ++ (intercalate "," $ map show arglist) ++ ")" 
         _ -> case arglist of
                [] -> functorname
-               _ -> functorname ++ "(" ++ (intercalate "," $ map show arglist) ++ ")"
+               _ -> functorname ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
     show (CiaoNumber x) = show x
     show (CiaoCase _ []) = "" -- dummy show, you shouldn't have an empty case
     show (CiaoCase id altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show id ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
