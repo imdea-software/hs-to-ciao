@@ -16,7 +16,6 @@ import Unique
 import Var
 import Literal
 
-
 deriving instance Show AltCon
 
 instance Show Type where 
