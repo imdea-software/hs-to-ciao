@@ -7,7 +7,7 @@ IN THE FUTURE:
 - TODO
   - [ ] keep implementing the translate function
     - [ ] make it so that the foldl Core translates into the example term I constructed
-    - [ ] afterwards, encode the other two manual examples within CiaoSyn
+    - [x] encode the other two manual examples within CiaoSyn
     - [ ] make booleans a special case
   - [x] ask/figure if the empty list is a functor in Ciao
     - it is :)
