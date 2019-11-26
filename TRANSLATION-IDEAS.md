@@ -49,6 +49,16 @@ foo(X) := 3 + (X=1 ? 2
 ```
 which could come in handy if separating the predicate in different clauses for syntax pattern-matching is not enough.
 
+Finally, although it seems it won't be necessary, here's an example for `case` that uses function composition to perform the case analysis over the result of a previous function:
+```prolog
+foo(X) := X+3.
+
+bar(X) := X=4 ? hey1
+        | X=5 ? hey2
+        | X=6 ? hey3.
+
+foobar(X) := ~compose(bar, foo, X).
+```
 ## Lambdas
 
 We have the following function:
