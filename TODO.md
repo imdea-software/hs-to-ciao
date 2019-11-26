@@ -2,6 +2,38 @@ IN THE FUTURE:
 
 - [ ] Make the 3 manual examples work with CiaoPP analysis
 
+21/11
+
+- TODO
+  - [ ] keep implementing the translate function
+    - [ ] make it so that the foldl Core translates into the example term I constructed
+    - [x] encode the other two manual examples within CiaoSyn
+    - [ ] make booleans a special case
+  - [x] ask/figure if the empty list is a functor in Ciao
+    - it is :)
+
+7/11
+
+- TODO
+  - [ ] keep implementing the translate function
+    - [ ] make booleans a special case
+    - [x] take a look at the point-free example (lambdas in Ciao? ~~or add the needed argument?~~)
+      - I've been discussing lambdas with José from the Ciao team, and they're going to make a few changes/additions;
+      so I think I'll try to use lambdas and the type signatura inspection to find out how many arguments are missing.
+      This could all be subject to change though.
+      - [x] how is a function's type signature encoded within CiaoSyn?
+  - [x] define the CiaoPred syntax so it covers the manual examples
+  - [x] created document [TRANSLATION-IDEAS.md](https://github.com/imdea-software/hs-to-ciao/blob/master/TRANSLATION-IDEAS.md) at the topmost folder of the project going over the assumptions/decisions
+  that are being taken for the translation process; this way both the Ciao team and Niki can tell what's going on and see if   everything is in check
+
+31/10
+
+- TODO
+  - [x] start reading Graham's
+  - [x] try to start the implementation
+  - [x] more concrete pseudocode
+    - point-free style will not be as immediate to translate as I thought; I need to ask you a few things
+    
 24/10
 
 - TODO
@@ -11,7 +43,8 @@ IN THE FUTURE:
   - [x] check if the manual translation for map-reduce is correct
     - [x] fix my Ciao/CiaoPP installation
   - [ ] more concrete pseudocode
-    - [ ] get cleaner print bindings (mess with the current code)
+    - [x] get cleaner print bindings (mess with the current code)
+      - ↑ I didn't have to change anything in the end, and I think it's clean enough
 
 10/10
 
