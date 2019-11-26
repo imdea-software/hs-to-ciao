@@ -1,0 +1,1 @@
+[Rec [(foldl',Lam f (Lam base (Lam ds_d11T (Case (Var ds_d11T) wild_00 Int [(DataAlt [],[],Var base),(DataAlt :,[x,xs],App (App (App (Var foldl') (Var f)) (App (App (Var f) (Var base)) (Var x))) (Var xs))]))))],NonRec $trModule (App (App (Var Module) (App (Var TrNameS) (Lit (MachStr "main")))) (App (Var TrNameS) (Lit (MachStr "Foldl"))))]

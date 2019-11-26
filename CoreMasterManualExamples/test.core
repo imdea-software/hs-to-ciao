@@ -1,0 +1,7 @@
+[x :: Integer
+[LclIdX]
+x = + @ Integer $fNumInteger 3 3,foo :: Integer
+[LclIdX]
+foo = + @ Integer $fNumInteger x 3,$trModule :: Module
+[LclIdX]
+$trModule = Module (TrNameS "main"#) (TrNameS "Test"#)]

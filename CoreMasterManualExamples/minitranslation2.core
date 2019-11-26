@@ -1,0 +1,12 @@
+[$trModule :: Module
+[LclIdX]
+$trModule = Module (TrNameS "main"#) (TrNameS "MiniTranslation2"#),filterAndFoldInts
+  :: (Int -> Bool) -> (Int -> Int -> Int) -> Int -> [Int] -> Int
+[LclIdX]
+filterAndFoldInts
+  = \ (filt :: Int -> Bool) (f :: Int -> Int -> Int) (base :: Int) ->
+      . @ [Int]
+        @ Int
+        @ [Int]
+        (foldl @ [] $fFoldable[] @ Int @ Int f base)
+        (filter @ Int filt)]
