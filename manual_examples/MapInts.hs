@@ -1,4 +1,4 @@
-module MiniTranslation where
+module MapInts where
 
 -- Testing for recursion in this example
 mapInts :: (Int -> Int) -> [Int] -> [Int]

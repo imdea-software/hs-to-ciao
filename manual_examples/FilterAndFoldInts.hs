@@ -1,4 +1,4 @@
-module MiniTranslation2 where
+module FilterAndFoldInts where
 
 -- Testing for point-free style in this example
 filterAndFoldInts :: (Int -> Bool) -> (Int -> Int -> Int) -> Int -> [Int] -> Int
