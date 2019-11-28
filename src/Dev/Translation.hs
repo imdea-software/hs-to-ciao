@@ -22,14 +22,26 @@ translateBind bind =
       NonRec var exprBind ->
           let name = getOccString (trace (showSDocUnsafe . ppr $ var) $ trace (showSDocUnsafe . ppr . varType $ var) var) in
           if name == "$trModule" then EmptyPred else
-          clauseReturnSimpleVal (CiaoTerm (CiaoId name) $ ciaoOnlyIdsArgList arglist) fbody
+          clauseReturnSimpleVal (CiaoTerm (CiaoId $ hsIDtoCiaoFunctorID name) $ ciaoOnlyIdsArgList arglist) fbody
               where arglist = map getOccString $ trace (showSDocUnsafe . ppr $ (fst . unfoldLam) exprBind) ((fst . unfoldLam) exprBind)
                     fbody = CiaoFBTerm (CiaoId "[]") []
       --_ -> EmptyPred
 
 ciaoOnlyIdsArgList :: [String] -> [CiaoArg]
-ciaoOnlyIdsArgList list = map (CiaoArgId . CiaoId) $ map (map toUpper) list
+ciaoOnlyIdsArgList list = map (CiaoArgId . CiaoId) $ map (hsIDtoCiaoVarID) list
 
+hsIDtoCiaoFunctorID :: String -> String
+hsIDtoCiaoFunctorID [] = []
+hsIDtoCiaoFunctorID (x:xs)
+    | x == '\'' = '_':(hsIDtoCiaoFunctorID xs) -- Since Ciao doesn't support single quotes as part of a functor's name
+    | otherwise = x:(hsIDtoCiaoFunctorID xs)
+                          
+hsIDtoCiaoVarID :: String -> String
+hsIDtoCiaoVarID [] = []
+hsIDtoCiaoVarID (x:xs)
+    | x == '\'' = '_':(hsIDtoCiaoVarID xs) -- Since Ciao doesn't support single quotes as part of a functor's name
+    | otherwise = (toUpper x):(hsIDtoCiaoVarID xs)
+                          
 funArityOfArguments :: Type -> [Int]
 funArityOfArguments = undefined
 
