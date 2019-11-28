@@ -2,6 +2,16 @@ IN THE FUTURE:
 
 - [ ] Make the 3 manual examples work with CiaoPP analysis
 
+28/11
+- TODO
+  - [ ] keep implementing the translate function
+    - [ ] make it so that the foldl Core translates into the example term I constructed
+      - [ ] use the arity function to print out the metapredicate clause in Ciao
+      - [ ] in the first case, return as result base
+      - [ ] also translate the second case correctly
+    - [ ] make booleans a special case
+  - [ ] figure out what kinds of analysis we can perform over our target manual examples
+
 21/11
 
 - TODO
