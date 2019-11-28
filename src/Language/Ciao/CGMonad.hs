@@ -8,7 +8,7 @@ import Language.Ghc.Misc ()
 
 import GhcPlugins
 
-import           Control.Monad.State
+import Control.Monad.State
 
 
 type CG = State CGEnv

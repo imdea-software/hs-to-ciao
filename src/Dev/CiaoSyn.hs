@@ -1,11 +1,16 @@
-module CiaoSyn where
+module Dev.CiaoSyn where
 
 import Data.List (intercalate)
+
+newtype CiaoProgram = CiaoProgram [CiaoPred]
+instance Show CiaoProgram where
+    show (CiaoProgram prediclist) = intercalate "\n" $ map show prediclist
     
-data CiaoPred = CPredC CiaoPredC | CPredF CiaoPredF
+data CiaoPred = CPredC CiaoPredC | CPredF CiaoPredF | EmptyPred
 instance Show CiaoPred where
-    show (CPredC pred) = show pred
-    show (CPredF pred) = show pred
+    show (CPredC predic) = show predic
+    show (CPredF predic) = show predic
+    show EmptyPred = "" -- EmptyPred is for placeholder purposes
               
 newtype CiaoPredC = CiaoPredC [CiaoClause]
 instance Show CiaoPredC where
@@ -19,7 +24,7 @@ instance Show CiaoPredF where
                                  
 data CiaoFunction = CiaoFunction CiaoHead CiaoFunctionBody
 instance Show CiaoFunction where
-    show (CiaoFunction head fcall) = show head ++ " := " ++ show fcall ++ "."
+    show (CiaoFunction ciaohead fcall) = show ciaohead ++ " := " ++ show fcall ++ "."
     
 data CiaoFunctionBody = CiaoFBTerm CiaoFunctor [CiaoFunctionBody] | CiaoFBCall CiaoFunctionCall
 instance Show CiaoFunctionBody where
@@ -35,8 +40,8 @@ instance Show CiaoFunctionCall where
 
 data CiaoClause = CiaoClause CiaoHead CiaoBody
 instance Show CiaoClause where
-    show (CiaoClause head []) = show head ++ "."
-    show (CiaoClause head body) = show head ++ " :- " ++ show body ++ "."
+    show (CiaoClause ciaohead []) = show ciaohead ++ "."
+    show (CiaoClause ciaohead body) = show ciaohead ++ " :- " ++ show body ++ "."
 
 type CiaoHead = CiaoTerm
 type CiaoBody = [CiaoTerm]
@@ -54,7 +59,7 @@ instance Show CiaoTerm where
                _ -> functorname ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
     show (CiaoNumber x) = show x
     show (CiaoCase _ []) = "" -- dummy show, you shouldn't have an empty case
-    show (CiaoCase id altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show id ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
+    show (CiaoCase ciaoid altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show ciaoid ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
 
 type CiaoFunctor = CiaoId
 newtype CiaoId = CiaoId String
@@ -63,5 +68,5 @@ instance Show CiaoId where
 
 data CiaoArg = CiaoArgId CiaoId | CiaoArgTerm CiaoTerm
 instance Show CiaoArg where
-    show (CiaoArgId ciaoid) = show ciaoid
+    show (CiaoArgId ciaociaoid) = show ciaociaoid
     show (CiaoArgTerm ciaoterm) = show ciaoterm

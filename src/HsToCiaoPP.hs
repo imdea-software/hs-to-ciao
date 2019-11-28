@@ -1,7 +1,8 @@
 module HsToCiaoPP (plugin) where
 
 import GhcPlugins
-import Language.Ciao.CoreToCiao
+--import Language.Ciao.CoreToCiao
+import Dev.Translation
 import Data.Char (toLower)
 
 plugin :: Plugin
