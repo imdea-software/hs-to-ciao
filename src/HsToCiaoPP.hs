@@ -37,7 +37,7 @@ pass modguts= do
 -- the actual code, really
 ciaoModuleHeader :: String
 ciaoModuleHeader = ":- module(_,_,[functional, hiord]).\n" ++
-                   ":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').\n\n"
+                   ":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl')."
                   
 coreFileName :: String -> String
 coreFileName name = "./out/" ++ map toLower name ++ ".core"
