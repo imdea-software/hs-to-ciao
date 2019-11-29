@@ -6,7 +6,7 @@ IN THE FUTURE:
 - TODO
   - [ ] keep implementing the translate function
     - [ ] make it so that the foldl Core translates into the example term I constructed
-      - [ ] use the arity function to print out the metapredicate clause in Ciao
+      - [x] use the arity function to print out the metapredicate clause in Ciao
       - [ ] in the first case, return as result base
       - [ ] also translate the second case correctly
     - [ ] make booleans a special case
