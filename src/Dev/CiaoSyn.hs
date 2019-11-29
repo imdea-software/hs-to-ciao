@@ -2,10 +2,16 @@ module Dev.CiaoSyn where
 
 import Data.List (intercalate)
 
-newtype CiaoProgram = CiaoProgram [CiaoPred]
+newtype CiaoProgram = CiaoProgram [(CiaoMetaPred, CiaoPred)]
 instance Show CiaoProgram where
-    show (CiaoProgram prediclist) = intercalate "\n" $ map show prediclist
-    
+    show (CiaoProgram prediclist) = intercalate "\n" $ map showAndConcatTuple prediclist
+        where showAndConcatTuple = (\(x,y) -> show x ++ "\n" ++ show y)
+                                   
+newtype CiaoMetaPred = CiaoMetaPred (String, [Int])
+instance Show CiaoMetaPred where
+    show (CiaoMetaPred (_, [])) = ""
+    show (CiaoMetaPred (predname, arities)) = ":- meta_predicate " ++ predname ++ "(" ++ (intercalate "," (map (\x -> if x == 1 then "?" else "pred(" ++ show x ++ ")") arities)) ++ ",?)."
+                                    
 data CiaoPred = CPredC CiaoPredC | CPredF CiaoPredF | EmptyPred
 instance Show CiaoPred where
     show (CPredC predic) = show predic
