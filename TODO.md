@@ -1,6 +1,6 @@
 IN THE FUTURE:
 
-- [ ] Make the 3 manual examples work with CiaoPP analysis
+- [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
 28/11
 - TODO
@@ -10,7 +10,7 @@ IN THE FUTURE:
       - [ ] in the first case, return as result base
       - [ ] also translate the second case correctly
     - [ ] make booleans a special case
-  - [ ] figure out what kinds of analysis we can perform over our target manual examples
+  - [x] check out if the manual examples work with CiaoPP analysis
 
 21/11
 
