@@ -2,6 +2,16 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+5/12
+
+- TODO
+  - [ ] write the final report in relation to the internship for my uni
+  - [ ] keep implementing the translate function
+    - [ ] make it so that the foldl Core translates into the example term I constructed
+      - [ ] keep writing the case-splitting function
+    - [ ] make functions returning booleans in Haskell a special case
+
+
 28/11
 - TODO
   - [ ] keep implementing the translate function
@@ -11,6 +21,7 @@ IN THE FUTURE:
       - [ ] also translate the second case correctly
     - [ ] make booleans a special case
   - [x] check out if the manual examples work with CiaoPP analysis
+    - according to the Ciao people, there should't be any problems
 
 21/11
 
