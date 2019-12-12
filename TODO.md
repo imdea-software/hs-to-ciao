@@ -2,6 +2,15 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+12/12
+
+- TODO
+  - [ ] keep implementing the translate function
+    - [ ] make it so that the foldl Core translates into the example term I constructed
+      - [ ] fix compilation errors in case-splitting function, and try it
+      - [ ] write the translate Ciao function body function
+    - [ ] make functions returning booleans in Haskell a special case
+
 5/12
 
 - TODO
