@@ -8,7 +8,7 @@ IN THE FUTURE:
   - [x] write the final report in relation to the internship for my uni
   - [ ] keep implementing the translate function
     - [ ] make it so that the foldl Core translates into the example term I constructed
-      - [ ] keep writing the case-splitting function
+      - [x] keep writing the case-splitting function
     - [ ] make functions returning booleans in Haskell a special case
 
 
