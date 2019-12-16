@@ -54,7 +54,7 @@ type CiaoBody = [CiaoTerm]
 
 -- NOTE: No support (yet) for infix variations of operators; they
 -- will be used as standard prefix functors
-data CiaoTerm = CiaoTerm CiaoFunctor [CiaoArg] | CiaoNumber Int | CiaoCase CiaoId [(CiaoTerm, CiaoTerm)]
+data CiaoTerm = CiaoTerm CiaoFunctor [CiaoArg] | CiaoTermLit CiaoLiteral | CiaoNumber Int | CiaoCase CiaoId [(CiaoTerm, CiaoTerm)]
 instance Show CiaoTerm where
     show (CiaoTerm functor arglist) =
         let functorname = show functor in case functorname of
@@ -63,16 +63,21 @@ instance Show CiaoTerm where
         _ -> case arglist of
                [] -> functorname
                _ -> functorname ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
+    show (CiaoTermLit lit) = show lit
     show (CiaoNumber x) = show x
     show (CiaoCase _ []) = "" -- dummy show, you shouldn't have an empty case
     show (CiaoCase ciaoid altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show ciaoid ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
 
 type CiaoFunctor = CiaoId
-newtype CiaoId = CiaoId String
+newtype CiaoId = CiaoId String deriving Eq
 instance Show CiaoId where
     show (CiaoId str) = str
 
 data CiaoArg = CiaoArgId CiaoId | CiaoArgTerm CiaoTerm
 instance Show CiaoArg where
-    show (CiaoArgId ciaociaoid) = show ciaociaoid
+    show (CiaoArgId ciaoid) = show ciaoid
     show (CiaoArgTerm ciaoterm) = show ciaoterm
+
+data CiaoLiteral = CiaoLitStr String
+instance Show CiaoLiteral where
+    show (CiaoLitStr str) = str
