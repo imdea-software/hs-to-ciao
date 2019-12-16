@@ -61,7 +61,51 @@ typeArity _              = 1
 
 clauseReturnSimpleVal :: CiaoHead -> CiaoFunctionBody -> CiaoPred
 clauseReturnSimpleVal ciaohead fbody = CPredF $ CiaoPredF [CiaoFunction ciaohead fbody]
-                             
+
+splitCaseClauses :: CiaoId -> CiaoHead -> [CoreAlt] -> [CiaoFunction]
+splitCaseClauses varAlt ciaohead@(CiaoTerm _ args) altlist =
+    [ CiaoFunction (funhead alt) (funbody alt) | alt <- altlist ] 
+        where funbody = \(_, _, expr) -> translateFunBody expr
+              funhead :: CoreAlt -> CiaoHead
+              funhead = \(altcon, conargs, _) ->
+                               let posArg = findInArgList varAlt args in
+                               case posArg of
+                                 Nothing -> ciaohead
+                                 (Just pos) -> 
+                                     case altcon of
+                                       (LitAlt lit) -> replaceArgInHeadWith ciaohead pos $ CiaoArgTerm $ CiaoTermLit $ translateLit lit
+                                       (DataAlt datacons) -> replaceArgInHeadWith ciaohead pos $ CiaoArgTerm $ CiaoTerm (CiaoId $ show datacons) $ map (\x -> CiaoArgTerm $ CiaoTerm (CiaoId $ show x) []) conargs
+                                       DEFAULT -> ciaohead
+splitCaseClauses _ _ _ = [] -- Placeholder for type-checker, there shouldn't be
+                          -- any heads other than functor + args
+
+replaceArgInHeadWith :: CiaoHead -> Int -> CiaoArg -> CiaoHead
+replaceArgInHeadWith (CiaoTerm functor arglist) poshead arghead = CiaoTerm functor $ replace arglist poshead arghead
+    where replace [] _ _ = []
+          replace (_:xs) 0 arg = arg:xs
+          replace (_:xs) pos arg = replace xs (pos - 1) arg
+replaceArgInHeadWith defaulthead _ _ = defaulthead
+
+                       
+findInArgList :: CiaoId -> [CiaoArg] -> Maybe Int
+findInArgList _ [] = Nothing
+findInArgList ciaoid (y:ys) = Just $ go 0 ciaoid (y:ys)
+    where
+      go _ _ [] = -1
+      go acc id' (x:xs) =
+          case x of
+            (CiaoArgTerm _) -> go (acc + 1) id' xs
+            (CiaoArgId argid) -> if argid == id' then acc else go (acc + 1) id' xs
+                                          
+                       
+translateFunBody :: CoreExpr -> CiaoFunctionBody
+translateFunBody = undefined
+
+-- For now this just translates the Literal as its immediate
+-- String representation; will probably have to change in the future
+translateLit :: Literal -> CiaoLiteral
+translateLit lit = CiaoLitStr $ (showSDocUnsafe . ppr) lit
+    
 unfoldLam :: Expr b -> ([b], Expr b)
 unfoldLam  = go []
   where
