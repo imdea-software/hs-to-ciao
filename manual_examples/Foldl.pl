@@ -1,5 +1,5 @@
 :- module(_,_,[functional, hiord]).
 
-:- meta_predicate foldl(pred(3),?,?,?).
-foldl(F, Base, []) := Base.
-foldl(F, Base, .(X,XS)) := ~foldl(F, ~F(Base, X), XS).
+:- meta_predicate foldl_(pred(3),?,?,?).
+foldl_(F, Base, []) := Base.
+foldl_(F, Base, .(X,Xs)) := ~foldl_(F, ~F(Base, X), Xs).

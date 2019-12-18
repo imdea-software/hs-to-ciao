@@ -3,5 +3,5 @@
 
 plus(X,Y) := X+Y.
 
-mapInts(DS_D11N, []) := [].
-mapInts(DS_D11N, .(X,XS)) := .(~DS_D11N(X), ~mapInts(DS_D11N, XS)).
+mapInts(Ds_d11n, []) := [].
+mapInts(Ds_d11n, .(X,Xs)) := .(~Ds_d11n(X), ~mapInts(Ds_d11n, Xs)).

@@ -16,7 +16,7 @@
 plus(X,Y) := ~(X+Y).
 
 :- meta_predicate mapreduce(pred(2),pred(3),?,?,?).
-mapreduce(F, COMBINATOR, BASE, LIST) := ~compose(foldl(COMBINATOR, BASE), map(F), LIST).
+mapreduce(F, Combinator, Base, List) := ~compose(foldl(Combinator, Base), map(F), List).
 
 %%%%%%%%%%
 
