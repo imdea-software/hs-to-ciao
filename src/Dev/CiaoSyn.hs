@@ -59,7 +59,7 @@ instance Show CiaoTerm where
     show (CiaoTerm functor arglist) =
         let functorname = show functor in case functorname of
         -- Translates the list cons (:) to Ciao's list cons
-        ":" -> ".(" ++ (intercalate "," $ map show arglist) ++ ")" 
+        --":" -> ".(" ++ (intercalate "," $ map show arglist) ++ ")" 
         _ -> case arglist of
                [] -> functorname
                _ -> functorname ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"

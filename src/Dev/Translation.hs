@@ -62,7 +62,7 @@ splitCaseClauses varAlt ciaohead@(CiaoTerm _ args) altlist =
                                  (Just pos) -> 
                                      case altcon of
                                        (LitAlt lit) -> replaceArgInHeadWith ciaohead pos $ CiaoArgTerm $ CiaoTermLit $ translateLit lit
-                                       (DataAlt datacons) -> replaceArgInHeadWith ciaohead pos $ CiaoArgTerm $ CiaoTerm (CiaoId $ show datacons) $ map (\x -> CiaoArgTerm $ CiaoTerm (CiaoId $ (hsIDtoCiaoVarID . show) x) []) conargs
+                                       (DataAlt datacons) -> replaceArgInHeadWith ciaohead pos $ CiaoArgTerm $ CiaoTerm (CiaoId $ (hsIDtoCiaoFunctorID . show) datacons) $ map (\x -> CiaoArgTerm $ CiaoTerm (CiaoId $ (hsIDtoCiaoVarID . show) x) []) conargs
                                        DEFAULT -> ciaohead
 splitCaseClauses _ _ _ = [] -- Placeholder for type-checker, there shouldn't be
                           -- any heads other than functor + args
@@ -75,6 +75,8 @@ ciaoOnlyIdsArgList :: [String] -> [CiaoArg]
 ciaoOnlyIdsArgList list = map (CiaoArgId . CiaoId) $ map (hsIDtoCiaoVarID) list
 
 hsIDtoCiaoFunctorID :: String -> String
+hsIDtoCiaoFunctorID "." = "compose"
+hsIDtoCiaoFunctorID ":" = "."
 hsIDtoCiaoFunctorID str = map (\x -> if x == '\'' then '_' else x) str
                           
 hsIDtoCiaoVarID :: String -> String
@@ -93,6 +95,24 @@ typeArity (FunTy tx t) | isPredTy tx = typeArity t
 typeArity (FunTy _ t)    = 1 + typeArity t 
 typeArity _              = 1 
 
+translateFunBody :: CoreExpr -> CiaoFunctionBody
+translateFunBody (Var x) = CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) x)) []
+translateFunBody expr = CiaoFBCall $ CiaoFunctionCall (getFunctorFromAppTree expr) (reverse $ collectArgsTree expr [])
+
+getFunctorFromAppTree :: CoreExpr -> CiaoFunctor
+getFunctorFromAppTree (Var x) = CiaoId $ (hsIDtoCiaoFunctorID . show) x
+getFunctorFromAppTree (App x _) = getFunctorFromAppTree x
+getFunctorFromAppTree thing = trace (show thing) $ CiaoId "ERROR"
+
+collectArgsTree :: CoreExpr -> [CiaoFunctionBody] -> [CiaoFunctionBody]
+collectArgsTree (Var x) args = (CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) x)) []):args
+collectArgsTree (App (Var _) (Var y)) args = (CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) y)) []):args
+collectArgsTree (App x (Var y)) args = (CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) y)) []):(collectArgsTree x args)
+collectArgsTree (App (Var _) app) args = (translateFunBody app):args
+collectArgsTree (App x app) args = (translateFunBody app):(collectArgsTree x args)
+collectArgsTree (Type _) args = args
+collectArgsTree expr _ = error $ "Tree of nested App in function body has something other than Var and App: " ++ (show expr)
+                           
 clauseReturnSimpleVal :: CiaoHead -> CiaoFunctionBody -> CiaoPred
 clauseReturnSimpleVal ciaohead fbody = CPredF $ CiaoPredF [CiaoFunction ciaohead fbody]
 
@@ -113,10 +133,6 @@ findInArgList ciaoid (y:ys) = Just $ go 0 ciaoid (y:ys)
           case x of
             (CiaoArgTerm _) -> go (acc + 1) id' xs
             (CiaoArgId argid) -> if argid == id' then acc else go (acc + 1) id' xs
-                                          
-                       
-translateFunBody :: CoreExpr -> CiaoFunctionBody
-translateFunBody _ = CiaoFBTerm (CiaoId "[]") [] -- placeholder function body
 
 -- For now this just translates the Literal as its immediate
 -- String representation; will probably have to change in the future
