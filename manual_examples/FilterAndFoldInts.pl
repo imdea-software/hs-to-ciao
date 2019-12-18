@@ -8,4 +8,4 @@ sum(X,Y) := +(X,Y).
 greater(X,Y) := ~bool(X>Y).
 
 :- meta_predicate filterAndFoldInts(pred(2),pred(3),?,?,?).
-filterAndFoldInts(FILT, F, BASE, LIST) := ~compose(foldl(F, BASE), filter(FILT), LIST).
+filterAndFoldInts(Filt, F, Base, List) := ~compose(foldl(F, Base), filter(Filt), List).
