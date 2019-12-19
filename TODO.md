@@ -6,9 +6,10 @@ IN THE FUTURE:
 
 - TODO
   - [ ] keep implementing the translate function
-    - [ ] make it so that the foldl Core translates into the example term I constructed
+    - [x] make it so that the foldl Core translates into the example term I constructed
       - [x] fix compilation errors in case-splitting function, and try it
-      - [ ] write the translate Ciao function body function
+      - [x] write the translate Ciao function body function
+    (it translates, but the ambiguity between functor/variable still has to be solved for the Ciao code to work properly)
     - [ ] make functions returning booleans in Haskell a special case
 
 5/12
