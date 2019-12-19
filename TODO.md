@@ -9,7 +9,7 @@ IN THE FUTURE:
     - [x] make it so that the foldl Core translates into the example term I constructed
       - [x] fix compilation errors in case-splitting function, and try it
       - [x] write the translate Ciao function body function
-    (it translates, but the ambiguity between functor/variable still has to be solved for the Ciao code to work properly)
+    - (it translates, but the ambiguity between functor/variable still has to be solved for the Ciao code to work properly)
     - [ ] make functions returning booleans in Haskell a special case
 
 5/12
