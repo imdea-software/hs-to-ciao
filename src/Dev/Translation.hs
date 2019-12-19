@@ -77,14 +77,15 @@ ciaoOnlyIdsArgList list = map (CiaoArgId . CiaoId) $ map (hsIDtoCiaoVarID) list
 hsIDtoCiaoFunctorID :: String -> String
 hsIDtoCiaoFunctorID "." = "compose"
 hsIDtoCiaoFunctorID ":" = "."
+hsIDtoCiaoFunctorID [] = []
 hsIDtoCiaoFunctorID str = map (\x -> if x == '\'' then '_' else x) str
                           
 hsIDtoCiaoVarID :: String -> String
+hsIDtoCiaoVarID "." = "compose"
+hsIDtoCiaoVarID ":" = "."
 hsIDtoCiaoVarID [] = []
 hsIDtoCiaoVarID str = let (hd:nonApostropheStr) = map (\x -> if x == '\'' then '_' else x) str in
-                      (toUpper hd):nonApostropheStr
-                      
-                      
+                      (toUpper hd):nonApostropheStr  
                           
 funArityOfArguments :: Type -> [Int]
 funArityOfArguments generalType = map typeArity $ fst $ splitFunTys generalType
@@ -97,17 +98,20 @@ typeArity _              = 1
 
 translateFunBody :: CoreExpr -> CiaoFunctionBody
 translateFunBody (Var x) = CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) x)) []
-translateFunBody expr = CiaoFBCall $ CiaoFunctionCall (getFunctorFromAppTree expr) (reverse $ collectArgsTree expr [])
+translateFunBody (App x (Type _)) = translateFunBody x
+translateFunBody expr = CiaoFBCall $ CiaoFunctionCall (getFunctorFromAppTree expr) $ trace (show $ reverse $ collectArgsTree expr []) (reverse $ collectArgsTree expr [])
 
 getFunctorFromAppTree :: CoreExpr -> CiaoFunctor
 getFunctorFromAppTree (Var x) = CiaoId $ (hsIDtoCiaoFunctorID . show) x
 getFunctorFromAppTree (App x _) = getFunctorFromAppTree x
-getFunctorFromAppTree thing = trace (show thing) $ CiaoId "ERROR"
+getFunctorFromAppTree _ = CiaoId "ERROR"
 
 collectArgsTree :: CoreExpr -> [CiaoFunctionBody] -> [CiaoFunctionBody]
 collectArgsTree (Var x) args = (CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) x)) []):args
 collectArgsTree (App (Var _) (Var y)) args = (CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) y)) []):args
 collectArgsTree (App x (Var y)) args = (CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) y)) []):(collectArgsTree x args)
+collectArgsTree (App (Var _) (Type  _)) args = args
+collectArgsTree (App x (Type  _)) args = collectArgsTree x args
 collectArgsTree (App (Var _) app) args = (translateFunBody app):args
 collectArgsTree (App x app) args = (translateFunBody app):(collectArgsTree x args)
 collectArgsTree (Type _) args = args
