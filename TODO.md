@@ -2,6 +2,16 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+19/12
+
+- TODO
+  - [ ] keep implementing the translate function
+    - [ ] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
+    - [ ] figure out about defining data types in Ciao
+    - [ ] translate the application of data constructors without the ~ (https://downloads.haskell.org/ghc/latest/docs/html/libraries/ghc-8.8.1/Id.html#v:isDataConWorkId)
+    - [ ] try to fix the other two manual examples 
+    - [ ] make functions returning booleans in Haskell a special case
+
 12/12
 
 - TODO
