@@ -99,12 +99,15 @@ typeArity _              = 1
 translateFunBody :: CoreExpr -> CiaoFunctionBody
 translateFunBody (Var x) = CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) x)) []
 translateFunBody (App x (Type _)) = translateFunBody x
-translateFunBody expr = CiaoFBCall $ CiaoFunctionCall (getFunctorFromAppTree expr) $ trace (show $ reverse $ collectArgsTree expr []) (reverse $ collectArgsTree expr [])
+translateFunBody expr = let (functor, isfunctor) = getFunctorFromAppTree expr in
+                        case isfunctor of
+                          True -> CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree expr []) (reverse $ collectArgsTree expr [])
+                          False -> CiaoFBCall $ CiaoFunctionCall functor $ trace (show $ reverse $ collectArgsTree expr []) (reverse $ collectArgsTree expr [])
 
-getFunctorFromAppTree :: CoreExpr -> CiaoFunctor
-getFunctorFromAppTree (Var x) = CiaoId $ (hsIDtoCiaoFunctorID . show) x
+getFunctorFromAppTree :: CoreExpr -> (CiaoFunctor, Bool)
+getFunctorFromAppTree (Var x) = (CiaoId $ (hsIDtoCiaoFunctorID . show) x, isDataConWorkId x)
 getFunctorFromAppTree (App x _) = getFunctorFromAppTree x
-getFunctorFromAppTree _ = CiaoId "ERROR"
+getFunctorFromAppTree _ = (CiaoId "ERROR", False)
 
 collectArgsTree :: CoreExpr -> [CiaoFunctionBody] -> [CiaoFunctionBody]
 collectArgsTree (Var x) args = (CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) x)) []):args
