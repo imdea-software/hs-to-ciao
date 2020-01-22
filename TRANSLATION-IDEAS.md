@@ -49,6 +49,15 @@ foo(X) := 3 + (X=1 ? 2
 ```
 which could come in handy if separating the predicate in different clauses for syntax pattern-matching is not enough.
 
+Another example shows that you can perform function calls to pattern-match upon, as is often the case in Core:
+```prolog
+f(0) := true.
+f(1) := false.
+
+foo(X) := 3 + (~f(X)=true ? 2
+             | ~f(X)=false ? 4).
+```
+
 Finally, although it seems it won't be necessary, here's an example for `case` that uses function composition to perform the case analysis over the result of a previous function:
 ```prolog
 foo(X) := X+3.
