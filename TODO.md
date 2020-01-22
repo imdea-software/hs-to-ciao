@@ -5,9 +5,9 @@ IN THE FUTURE:
 16/1
   - [ ] keep implementing the translate function
     - [ ] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
-    - [ ] figure out about defining data types in Ciao
+    - [x] figure out about defining data types in Ciao
     - [ ] try to fix the other two manual examples 
-    - [ ] make functions returning booleans in Haskell a special case
+    - [x] make functions returning booleans in Haskell a special case
 
 19/12
 
