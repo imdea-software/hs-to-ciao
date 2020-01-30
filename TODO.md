@@ -2,6 +2,18 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+30/1
+  - [ ] keep implementing the translate function
+    - [ ] fix the ordering of the case clauses
+    - [ ] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
+  - [ ] CiaoPP connection 
+    - [ ] check if the Ciao resulting code works within the Ciao interpreter (and if not, take a look into why)
+    - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
+  - [ ] add support for data types 
+     - [ ] port the list functions to ones that use a user-defined list
+  - [ ] try to translate insertionSort (maybe mergeSort and quickSort, ghc's smooth merge sort later on)
+  
+
 16/1
   - [ ] keep implementing the translate function
     - [ ] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
