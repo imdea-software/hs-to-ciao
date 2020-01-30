@@ -21,24 +21,32 @@ instance Show CiaoPred where
 newtype CiaoPredC = CiaoPredC [CiaoClause]
 instance Show CiaoPredC where
     show (CiaoPredC []) = ""
-    show (CiaoPredC clauseList) = intercalate "\n" $ map show clauseList
+    show (CiaoPredC clauseList) = (intercalate "\n" $ map show clauseList) ++ "\n"
 
 newtype CiaoPredF = CiaoPredF [CiaoFunction]
 instance Show CiaoPredF where
     show (CiaoPredF []) = ""
-    show (CiaoPredF funList) = intercalate "\n" $ map show funList
+    show (CiaoPredF funList) = (intercalate "\n" $ map show funList) ++ "\n"
                                  
 data CiaoFunction = CiaoFunction CiaoHead CiaoFunctionBody
 instance Show CiaoFunction where
     show (CiaoFunction ciaohead fcall) = show ciaohead ++ " := " ++ show fcall ++ "."
     
-data CiaoFunctionBody = CiaoFBTerm CiaoFunctor [CiaoFunctionBody] | CiaoFBCall CiaoFunctionCall
+data CiaoFunctionBody = CiaoFBTerm CiaoFunctor [CiaoFunctionBody] | CiaoFBCall CiaoFunctionCall | CiaoFBLit CiaoLiteral | CiaoCaseVar CiaoId [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoCaseFunCall CiaoFunctionBody [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoEmptyFB
 instance Show CiaoFunctionBody where
     show (CiaoFBTerm name arglist) =
         case arglist of
           [] -> show name
-          _ -> show name ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
+          _ -> case name of
+                 (CiaoId ".") -> "[" ++ (intercalate " | " $ map show arglist) ++ "]"
+                 _ -> show name ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
     show (CiaoFBCall funcall) = show funcall
+    show (CiaoFBLit lit) = show lit
+    show (CiaoCaseVar _ []) = "" -- dummy show, you shouldn't have an empty case
+    show (CiaoCaseFunCall _ []) = "" -- dummy show, you shouldn't have an empty case
+    show (CiaoCaseVar ciaoid altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show ciaoid ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
+    show (CiaoCaseFunCall ciaoid altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show ciaoid ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
+    show CiaoEmptyFB = "" -- placeholder body
 
 data CiaoFunctionCall = CiaoFunctionCall CiaoFunctor [CiaoFunctionBody]
 instance Show CiaoFunctionCall where
@@ -54,7 +62,7 @@ type CiaoBody = [CiaoTerm]
 
 -- NOTE: No support (yet) for infix variations of operators; they
 -- will be used as standard prefix functors
-data CiaoTerm = CiaoTerm CiaoFunctor [CiaoArg] | CiaoTermLit CiaoLiteral | CiaoNumber Int | CiaoCase CiaoId [(CiaoTerm, CiaoTerm)]
+data CiaoTerm = CiaoTerm CiaoFunctor [CiaoArg] | CiaoTermLit CiaoLiteral | CiaoNumber Int | CiaoEmptyTerm
 instance Show CiaoTerm where
     show (CiaoTerm functor arglist) =
         let functorname = show functor in case functorname of
@@ -62,11 +70,12 @@ instance Show CiaoTerm where
         --":" -> ".(" ++ (intercalate "," $ map show arglist) ++ ")" 
         _ -> case arglist of
                [] -> functorname
-               _ -> functorname ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
+               _ -> case functorname of
+                      "." -> "[" ++ (intercalate " | " $ map show arglist) ++ "]"
+                      _ -> functorname ++ "(" ++ (intercalate ", " $ map show arglist) ++ ")"
     show (CiaoTermLit lit) = show lit
     show (CiaoNumber x) = show x
-    show (CiaoCase _ []) = "" -- dummy show, you shouldn't have an empty case
-    show (CiaoCase ciaoid altlist) = "(" ++ (intercalate "\n| " $ zipWith (++) (map (((show ciaoid ++ "=") ++) . (++ " ? ")) (map (show . fst) altlist)) (map (show . snd) altlist)) ++ ")"
+    show CiaoEmptyTerm = "" -- this should only be used with placeholders
 
 type CiaoFunctor = CiaoId
 newtype CiaoId = CiaoId String deriving Eq

@@ -29,19 +29,23 @@ translateCoreBndr var exprBind =
     -- let name = show (trace (showSDocUnsafe . ppr $ var) $
           --                  trace (showSDocUnsafe . ppr . varType $ var) $
           --                  trace (show . funArityOfArguments . varType $ var) var) in
-          if name == "$trModule" then placeholderPred else
+          
           --(metapred, clauseReturnSimpleVal (CiaoTerm (CiaoId name) $ ciaoOnlyIdsArgList arglist) fbody)
-              (metapred, CPredF $ CiaoPredF $ splitCaseClauses varID (CiaoTerm (CiaoId name) $ ciaoOnlyIdsArgList arglist) alts)
-              where arglist = map show $ trace (show $ fst funStrippedArgs) (fst funStrippedArgs)
-                    funStrippedArgs = unfoldLam exprBind
-                    caseExpr = snd funStrippedArgs
-                    (varID, alts) = fromCaseGetVarIDAndAlts caseExpr
-                    --fbody = CiaoFBTerm (CiaoId "[]") []
-                    metapred = CiaoMetaPred (name, funArityOfArguments $ varType var)
-                    name = hsIDtoCiaoFunctorID $
-                           show (trace (showSDocUnsafe . ppr $ var) $
-                                 trace (showSDocUnsafe . ppr . varType $ var) $
-                                 trace (show . funArityOfArguments . varType $ var) var)
+    if name == "$trModule" then placeholderPred else
+              let arglist = map show $ trace (show $ fst funStrippedArgs) (fst funStrippedArgs);
+                  funStrippedArgs = unfoldLam exprBind;
+                  remainingExpr = snd funStrippedArgs in
+              case remainingExpr of
+                caseExpr@(Case _ _ _ _) -> (metapred, CPredF $ CiaoPredF $ splitCaseClauses varID (CiaoTerm (CiaoId name) $ ciaoOnlyIdsArgList arglist) alts)
+                    where (varID, alts) = fromCaseGetVarIDAndAlts caseExpr
+                                --fbody = CiaoFBTerm (CiaoId "[]") []
+                _ -> (metapred, CPredF $ CiaoPredF $ [CiaoFunction (CiaoTerm (CiaoId name) $ ciaoOnlyIdsArgList arglist) $ translateFunBody remainingExpr])
+        where metapred = CiaoMetaPred (name, funArityOfArguments $ varType var)
+              name = hsIDtoCiaoFunctorID $
+                     show (trace (showSDocUnsafe . ppr $ var) $
+                           trace (showSDocUnsafe . ppr . varType $ var) $
+                           trace (show . funArityOfArguments . varType $ var) var)
+              
       --_ -> EmptyPred
           
 unfoldLam :: Expr b -> ([b], Expr b)
@@ -51,8 +55,9 @@ unfoldLam  = go []
     go acc expr = (reverse acc, expr)
 
 splitCaseClauses :: CiaoId -> CiaoHead -> [CoreAlt] -> [CiaoFunction]
-splitCaseClauses varAlt ciaohead@(CiaoTerm _ args) altlist =
-    [ CiaoFunction (funhead alt) (funbody alt) | alt <- altlist ] 
+splitCaseClauses varAlt ciaohead ((_, _, (Case (Var _) _ _ subCaseAlts)):restOfAlts) = reverse $ splitCaseClauses varAlt ciaohead subCaseAlts ++ splitCaseClauses varAlt ciaohead restOfAlts
+splitCaseClauses varAlt ciaohead@(CiaoTerm _ args) (alt:restOfAlts) = trace ("HOLA2") $
+    [ CiaoFunction (funhead alt) (funbody alt) ] ++ splitCaseClauses varAlt ciaohead restOfAlts
         where funbody = \(_, _, expr) -> translateFunBody expr
               funhead :: CoreAlt -> CiaoHead
               funhead = \(altcon, conargs, _) ->
@@ -77,15 +82,19 @@ ciaoOnlyIdsArgList list = map (CiaoArgId . CiaoId) $ map (hsIDtoCiaoVarID) list
 hsIDtoCiaoFunctorID :: String -> String
 hsIDtoCiaoFunctorID "." = "compose"
 hsIDtoCiaoFunctorID ":" = "."
+hsIDtoCiaoFunctorID "True" = "true"
+hsIDtoCiaoFunctorID "False" = "false"
 hsIDtoCiaoFunctorID [] = []
 hsIDtoCiaoFunctorID str = map (\x -> if x == '\'' then '_' else x) str
                           
 hsIDtoCiaoVarID :: String -> String
 hsIDtoCiaoVarID "." = "compose"
 hsIDtoCiaoVarID ":" = "."
+hsIDtoCiaoVarID "True" = "true"
+hsIDtoCiaoVarID "False" = "false"
 hsIDtoCiaoVarID [] = []
 hsIDtoCiaoVarID str = let (hd:nonApostropheStr) = map (\x -> if x == '\'' then '_' else x) str in
-                      (toUpper hd):nonApostropheStr  
+                      (toUpper hd):nonApostropheStr
                           
 funArityOfArguments :: Type -> [Int]
 funArityOfArguments generalType = map typeArity $ fst $ splitFunTys generalType
@@ -99,10 +108,20 @@ typeArity _              = 1
 translateFunBody :: CoreExpr -> CiaoFunctionBody
 translateFunBody (Var x) = CiaoFBTerm (CiaoId ((hsIDtoCiaoVarID . show) x)) []
 translateFunBody (App x (Type _)) = translateFunBody x
+translateFunBody (App (Var _) (Lit lit)) = CiaoFBLit $ translateLit lit
+translateFunBody (Case (App (Var varID) (Var argID)) _ _ altlist) = CiaoCaseFunCall (CiaoFBCall $ CiaoFunctionCall (CiaoId $ (hsIDtoCiaoVarID . show) varID) [CiaoFBTerm (CiaoId $ (hsIDtoCiaoVarID . show) argID) []]) $ map getTermFromCaseAlt altlist
+translateFunBody (Case (App (Var varID) x) _ _ altlist) = CiaoCaseFunCall (CiaoFBCall $ CiaoFunctionCall (CiaoId $ (hsIDtoCiaoVarID . show) varID) [translateFunBody x]) $ map getTermFromCaseAlt altlist
+translateFunBody (Case (Var varID) _ _ altlist) = CiaoCaseVar (CiaoId $ (hsIDtoCiaoVarID . show) varID) $ map getTermFromCaseAlt altlist
 translateFunBody expr = let (functor, isfunctor) = getFunctorFromAppTree expr in
                         case isfunctor of
                           True -> CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree expr []) (reverse $ collectArgsTree expr [])
                           False -> CiaoFBCall $ CiaoFunctionCall functor $ trace (show $ reverse $ collectArgsTree expr []) (reverse $ collectArgsTree expr [])
+
+getTermFromCaseAlt :: CoreAlt -> (CiaoFunctionBody, CiaoFunctionBody)
+getTermFromCaseAlt (altcon, conargs, altExpr) = case altcon of
+                                                 DataAlt datacons -> (CiaoFBTerm (CiaoId $ (hsIDtoCiaoFunctorID . show) datacons) $ map (\x -> CiaoFBTerm (CiaoId $ (hsIDtoCiaoVarID . show) x) []) conargs, translateFunBody altExpr)
+                                                 LitAlt lit -> (CiaoFBLit $ translateLit lit, translateFunBody altExpr)
+                                                 DEFAULT -> (CiaoEmptyFB, CiaoEmptyFB) -- placeholder
 
 getFunctorFromAppTree :: CoreExpr -> (CiaoFunctor, Bool)
 getFunctorFromAppTree (Var x) = (CiaoId $ (hsIDtoCiaoFunctorID . show) x, isDataConWorkId x)
@@ -144,4 +163,4 @@ findInArgList ciaoid (y:ys) = Just $ go 0 ciaoid (y:ys)
 -- For now this just translates the Literal as its immediate
 -- String representation; will probably have to change in the future
 translateLit :: Literal -> CiaoLiteral
-translateLit lit = CiaoLitStr $ (showSDocUnsafe . ppr) lit
+translateLit lit = CiaoLitStr $ filter (not . (`elem` "#")) $ (showSDocUnsafe . ppr) lit
