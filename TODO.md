@@ -7,7 +7,7 @@ IN THE FUTURE:
     - [x] fix the ordering of the case clauses
     - [x] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
   - [ ] CiaoPP connection 
-    - [ ] check if the Ciao resulting code works within the Ciao interpreter (and if not, take a look into why)
+    - [x] check if the Ciao resulting code works within the Ciao interpreter (and if not, take a look into why)
     - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
   - [ ] add support for data types 
      - [ ] port the list functions to ones that use a user-defined list
