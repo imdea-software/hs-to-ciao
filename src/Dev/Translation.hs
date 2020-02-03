@@ -119,8 +119,18 @@ translateFunBody idlist (Case (Var varID) _ _ altlist) = CiaoCaseVar (CiaoId $ (
 translateFunBody idlist expr = let (functor, isfunctor) = getFunctorFromAppTree idlist expr in
                         case isfunctor of
                           True -> CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
-                          False -> CiaoFBCall $ CiaoFunctionCall functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
+                          False -> let arity = typeArity $ varType (getCoreVarFromAppTree expr); listOfArgs = collectArgsTree idlist expr [] in
+                                   if length listOfArgs < arity - 1 then
+                                       CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
+                                   else
+                                       CiaoFBCall $ CiaoFunctionCall functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
+                                     
 
+getCoreVarFromAppTree :: CoreExpr -> Var
+getCoreVarFromAppTree (Var x) = x
+getCoreVarFromAppTree (App x _) = getCoreVarFromAppTree x
+getCoreVarFromAppTree expr = error $ "Couldn't find the Var root of the App tree: " ++ (show expr)
+                                          
 getTermFromCaseAlt :: [String] -> CoreAlt -> (CiaoFunctionBody, CiaoFunctionBody)
 getTermFromCaseAlt idlist (altcon, conargs, altExpr) = case altcon of
                                                  DataAlt datacons -> (CiaoFBTerm (CiaoId $ ((hsIDtoCiaoFunctorID idlist) . show) datacons) $ map (\x -> CiaoFBTerm (CiaoId $ ((hsIDtoCiaoVarID idlist) . show) x) []) conargs, translateFunBody idlist altExpr)
