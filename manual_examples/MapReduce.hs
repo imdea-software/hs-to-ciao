@@ -11,7 +11,7 @@ foldl f b (x:xs) = x `f` foldl f b xs
 
 map :: (Int -> Int) -> [Int] -> [Int]
 map _ [] = []
-map f (x:xs) = (f x) : xs
+map f (x:xs) = (f x) : map f xs
 
 mapreduce :: (Int -> Int) -> (Int -> Int -> Int) -> Int -> [Int] -> Int
 mapreduce f combinator base x = ((foldl combinator base) . (map f)) x
