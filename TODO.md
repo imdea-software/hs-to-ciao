@@ -3,9 +3,9 @@ IN THE FUTURE:
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
 30/1
-  - [ ] keep implementing the translate function
-    - [ ] fix the ordering of the case clauses
-    - [ ] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
+  - [x] keep implementing the translate function
+    - [x] fix the ordering of the case clauses
+    - [x] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
   - [ ] CiaoPP connection 
     - [ ] check if the Ciao resulting code works within the Ciao interpreter (and if not, take a look into why)
     - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
