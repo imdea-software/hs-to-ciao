@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module HsToCiaoPP (plugin) where
 
 import GhcPlugins
@@ -5,7 +7,8 @@ import GhcPlugins
 -- import Language.Ghc.Misc ()
 import Dev.Translation
 import Data.Char (toLower)
-
+import Text.Regex (mkRegex, subRegex)
+    
 plugin :: Plugin
 plugin = defaultPlugin {
   installCoreToDos = install
@@ -30,7 +33,7 @@ pass modguts= do
     liftIO $ writeFile (coreFileName name) (show hsBinds)
     -- Write translation into the .pl file
     liftIO $ writeFile (ciaoFileName name) ciaoModuleHeader
-    liftIO $ appendFile (ciaoFileName name) (show ciaoCore)
+    liftIO $ appendFile (ciaoFileName name) ((singletonListSimplify . show) ciaoCore)
     bindsOnlyPass (mapM return) modguts
 
 -- things required for the Ciao programs to work as expected
@@ -45,5 +48,11 @@ coreFileName name = "./out/" ++ map toLower name ++ ".core"
                   
 ciaoFileName :: String -> String 
 ciaoFileName name = "./out/" ++ map toLower name ++ ".pl"
+
+-- This function is just to make the resulting Ciao code prettier;
+-- instead of leaving singleton lists in the form [X | []], it turns
+-- them into something like [X], far more readable.
+singletonListSimplify :: String -> String
+singletonListSimplify ciaoProgram = subRegex (mkRegex "\\[(.*) \\| \\[\\]\\]") ciaoProgram "[\\1]"
 
 
