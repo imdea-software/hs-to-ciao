@@ -1,5 +1,15 @@
 :- module(_,_,[functional, hiord]).
 
+%%%%% TESTING FUNCTIONS
+
+:- meta_predicate isthree(?,?).
+isthree(3) := true.
+isthree(Ds_d2tf) := false.
+
+sum(X,Y) := X+Y.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+
 :- meta_predicate bool(goal,?).
 bool(X,T) :- (X -> T=true ; T=false).
 
