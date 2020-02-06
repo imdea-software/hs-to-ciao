@@ -40,7 +40,7 @@ pass modguts= do
 -- (module dependencies  and such), or whatever that goes before
 -- the actual code, really
 ciaoModuleHeader :: String
-ciaoModuleHeader = ":- module(_,_,[functional, hiord]).\n" ++
+ciaoModuleHeader = ":- module(_,_,[assertions, regtypes, functional, hiord]).\n" ++
                    ":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').\n\n"
                   
 coreFileName :: String -> String
