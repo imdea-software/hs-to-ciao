@@ -2,7 +2,22 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+6/2
+
+- TODO
+  - [ ] CiaoPP connection 
+    - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
+    - [ ] find one example that CiaoPP works on, and do the whole pipeline from Haskell to Ciao on that one
+  - [ ] add support for data types 
+    - [ ] port the list functions to ones that use a user-defined list
+  - [ ] try to translate insertionSort (maybe mergeSort and quickSort, ghc's smooth merge sort later on)
+    - [ ] translate (<), (+) etc. 
+      - [ ] print (+), (<), etc with full names (i.e., include module names) since (+) is already taken by CiaoPP, but `GHC.Num.+` is not
+      - [ ] Print `GHC.Num.+` etc using ONLY CiaoPP friendly symbols, i.e., no `.` no `+`.
+      - [ ] Define a library that translates `GHCNumPlus(D, X, Y)` into `X+Y`
 30/1
+
+- TODO
   - [x] keep implementing the translate function
     - [x] fix the ordering of the case clauses
     - [x] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
@@ -15,6 +30,8 @@ IN THE FUTURE:
   
 
 16/1
+
+- TODO
   - [ ] keep implementing the translate function
     - [ ] add local variable tracking for function body id translation; if it's a local id, translate it into uppercase, otherwise lowercase
     - [x] figure out about defining data types in Ciao
