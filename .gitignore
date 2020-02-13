@@ -29,3 +29,5 @@ reports/*
 !reports/*.tex
 !reports/img/*
 */#*
+out/*
+tests/*

@@ -2,6 +2,17 @@ module Dev.CiaoSyn where
 
 import Data.List (intercalate)
 
+newtype CiaoRegtype = CiaoRegtype (CiaoId, [(CiaoId, [CiaoId])])
+instance Show CiaoRegtype where
+    show (CiaoRegtype (regtypeName, listOfCons)) =
+        ":- regtype " ++ (show regtypeName) ++ "/1\n" ++ (intercalate "\n" $ map showCons listOfCons)
+            where showCons = (\(tyConsName, tyConsArgs) ->
+                              let varIDs = genVarIDs (length tyConsArgs) in
+                              show regtypeName ++ "(" ++ show tyConsName ++ "(" ++ intercalate ", " varIDs ++  ")) :- " ++
+                              intercalate ", " [ show tyCons ++ "(" ++ show varID ++ ")" | tyCons <- tyConsArgs, varID <- varIDs ])
+                  genVarIDs = (\len -> map (("X"++) . show) [1..len])
+                  
+    
 newtype CiaoProgram = CiaoProgram [(CiaoMetaPred, CiaoPred)]
 instance Show CiaoProgram where
     show (CiaoProgram prediclist) = intercalate "\n" $ map showAndConcatTuple prediclist
