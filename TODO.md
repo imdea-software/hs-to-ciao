@@ -2,8 +2,7 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
-6/2
-
+13/2
 
 - TODO
   - [ ] CiaoPP connection 
@@ -17,6 +16,8 @@ IN THE FUTURE:
         - [ ] if I can't find a way of doing this, send Niki an email with the function and tracing
       - [ ] Print `GHC.Num.+` etc using ONLY CiaoPP friendly symbols, i.e., no `.` no `+`.
       - [ ] Define a library that translates `GHCNumPlus(D, X, Y)` into `X+Y`
+
+6/2
 
 - TODO
   - [ ] CiaoPP connection 
