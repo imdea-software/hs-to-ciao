@@ -2,6 +2,9 @@ module FilterAndFoldInts where
 
 import Prelude hiding (foldl, (.), filter)
 
+sum :: Int -> Int -> Int
+sum x y = x + y
+    
 foldl :: (Int -> Int -> Int) -> Int -> [Int] -> Int
 foldl _ b []     = b
 foldl f b (x:xs) = x `f` foldl f b xs
