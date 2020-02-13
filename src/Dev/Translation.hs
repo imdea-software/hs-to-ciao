@@ -1,6 +1,6 @@
 module Dev.Translation where
 
-import Data.Char (toUpper)
+import Data.Char (toUpper, toLower)
 import Debug.Trace
     
 import Language.Ghc.Misc ()
@@ -31,7 +31,7 @@ translateCoreBndr var exprBind =
           --                  trace (show . funArityOfArguments . varType $ var) var) in
           
           --(metapred, clauseReturnSimpleVal (CiaoTerm (CiaoId name) $ ciaoOnlyIdsArgList arglist) fbody)
-    if name == "$trModule" then placeholderPred else
+    if name !! 0 == '$' then placeholderPred else
               let arglist = map show $ trace (show $ fst funStrippedArgs) (fst funStrippedArgs);
                   funStrippedArgs = unfoldLam exprBind;
                   remainingExpr = snd funStrippedArgs in
@@ -84,18 +84,20 @@ hsIDtoCiaoFunctorID _ "." = "compose"
 hsIDtoCiaoFunctorID _ ":" = "."
 hsIDtoCiaoFunctorID _ "True" = "true"
 hsIDtoCiaoFunctorID _ "False" = "false"
+hsIDtoCiaoFunctorID _ "++" = "append"
 hsIDtoCiaoFunctorID _ [] = []
-hsIDtoCiaoFunctorID idlist str = if (str `elem` idlist) then
+hsIDtoCiaoFunctorID idlist str@(y:ys) = if (str `elem` idlist) then
                                      let (hd:nonApostropheStr) = map (\x -> if x == '\'' then '_' else x) str in
                                      (toUpper hd):nonApostropheStr
                                  else
-                                     map (\x -> if x == '\'' then '_' else x) str
+                                     (toLower y):(map (\x -> if x == '\'' then '_' else x) ys)
                           
 hsIDtoCiaoVarID :: [String] -> String -> String
 hsIDtoCiaoVarID _ "." = "compose"
 hsIDtoCiaoVarID _ ":" = "."
 hsIDtoCiaoVarID _ "True" = "true"
 hsIDtoCiaoVarID _ "False" = "false"
+hsIDtoCiaoVarID _ "++" = "append"
 hsIDtoCiaoVarID _ [] = []
 hsIDtoCiaoVarID _ str = let (hd:nonApostropheStr) = map (\x -> if x == '\'' then '_' else x) str in
                       (toUpper hd):nonApostropheStr
