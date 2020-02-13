@@ -4,6 +4,20 @@ IN THE FUTURE:
 
 6/2
 
+
+- TODO
+  - [ ] CiaoPP connection 
+    - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
+    - [ ] find one example that CiaoPP works on, and do the whole pipeline from Haskell to Ciao on that one
+  - [ ] add support for data types 
+    - [ ] port the list functions to ones that use a user-defined list
+  - [ ] try to translate insertionSort (maybe mergeSort and quickSort, ghc's smooth merge sort later on)
+    - [ ] translate (<), (+) etc. 
+      - [ ] print (+), (<), etc with full names (i.e., include module names) since (+) is already taken by CiaoPP, but `GHC.Num.+` is not
+        - [ ] if I can't find a way of doing this, send Niki an email with the function and tracing
+      - [ ] Print `GHC.Num.+` etc using ONLY CiaoPP friendly symbols, i.e., no `.` no `+`.
+      - [ ] Define a library that translates `GHCNumPlus(D, X, Y)` into `X+Y`
+
 - TODO
   - [ ] CiaoPP connection 
     - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
@@ -15,6 +29,7 @@ IN THE FUTURE:
       - [ ] print (+), (<), etc with full names (i.e., include module names) since (+) is already taken by CiaoPP, but `GHC.Num.+` is not
       - [ ] Print `GHC.Num.+` etc using ONLY CiaoPP friendly symbols, i.e., no `.` no `+`.
       - [ ] Define a library that translates `GHCNumPlus(D, X, Y)` into `X+Y`
+      
 30/1
 
 - TODO
