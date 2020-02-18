@@ -7,7 +7,7 @@ IN THE FUTURE:
 - TODO
   - [ ] CiaoPP connection 
     - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
-    - [ x find one example that CiaoPP works on, and do the whole pipeline from Haskell to Ciao on that one
+    - [x] find one example that CiaoPP works on, and do the whole pipeline from Haskell to Ciao on that one
   - [x] add support for data types 
     - [x] port the list functions to ones that use a user-defined list
   - [ ] try to translate insertionSort (maybe mergeSort and quickSort, ghc's smooth merge sort later on)
