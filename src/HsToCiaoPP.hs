@@ -4,6 +4,8 @@ import GhcPlugins
 import Language.Ciao.CoreToCiao
 import Data.Char (toLower)
 
+import Language.Ghc.Misc
+
 plugin :: Plugin
 plugin = defaultPlugin {
   installCoreToDos = install
@@ -24,6 +26,9 @@ pass modguts= do
     -- Print Ciao translation
     liftIO $ putStrLn $ "\n--- Ciao Code: ---\n"
     liftIO $ putStrLn $ show ciaoCore
+    -- Test qualified 
+    liftIO $ putStrLn $ "\n -- Qaulified Vars -- \n"
+    liftIO $ putStrLn $ unwords $ (showQualified <$> vars hsBinds)
     -- Write Core bindings into the .core file
     liftIO $ writeFile (coreFileName name) (show hsBinds)
     -- Write translation into the .pl file

@@ -1,5 +1,8 @@
 module Merge where
 
+
+bar = (+)
+
 merge :: Ord a => [a] -> [a] -> [a]
 merge [] ys = ys
 merge xs [] = xs 

@@ -13,6 +13,28 @@ import Unique
 import Var
 import Literal
 
+import DynFlags
+
+
+showQualified :: Var -> String 
+showQualified = showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
+
+
+vars :: [CoreBind] -> [Var]
+vars = concatMap go 
+  where 
+    go (NonRec x e) = x:exprVars e
+    go (Rec xes)    = (fst <$> xes) ++ concatMap exprVars (snd <$> xes)
+
+    exprVars :: CoreExpr -> [Var]
+    exprVars (Var x)        = [x]
+    exprVars (App e1 e2)    = exprVars e1 ++ exprVars e2 
+    exprVars (Lam x e)      = x:exprVars e  
+    exprVars (Let b e)      = go b ++ exprVars e 
+    exprVars (Cast e _)     = exprVars e 
+    exprVars (Tick _ e)     = exprVars e 
+    exprVars (Case _ _ _ _) = [] -- NV TODO
+    exprVars _              = [] 
 
 instance Show AltCon where 
   show = showSDocUnsafe . ppr 
