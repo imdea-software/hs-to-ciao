@@ -8,9 +8,9 @@ IN THE FUTURE:
   - [ ] Write report for thesis
   - [ ] CiaoPP connection 
     - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
-  - [ ] fix infix operators being printed with parenthesis (although they should not)
+  - [x] fix infix operators being printed with parenthesis (although they should not)
   - [ ] try to translate insertionSort (maybe mergeSort and quickSort, ghc's smooth merge sort later on)
-    - [ ] fix GHC crashing issue while trying to perform the translation on insertionSort
+    - [x] fix GHC crashing issue while trying to perform the translation on insertionSort
     - [ ] translate (<), (+) etc. 
       - [ ] print (+), (<), etc with full names (i.e., include module names) since (+) is already taken by CiaoPP, but `GHC.Num.+` is not
         - [ ] integrate `showQualified` function properly in the translation
