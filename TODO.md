@@ -5,7 +5,7 @@ IN THE FUTURE:
 21/2
 
 - TODO
-  - [ ] Write report for thesis
+  - [x] Write report for thesis
   - [ ] CiaoPP connection 
     - [ ] for the examples that work, try to see which information we can get with CiaoPP and how this information maps back to the original Haskell program
   - [x] fix infix operators being printed with parenthesis (although they should not)
