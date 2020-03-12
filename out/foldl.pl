@@ -1,4 +1,4 @@
-:- module(_,_,[functional, hiord]).
+:- module(_,_,[assertions, regtypes, functional, hiord]).
 :- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').
 
 :- meta_predicate foldl_(pred(3),?,?,?).

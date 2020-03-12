@@ -30,4 +30,5 @@ reports/*
 !reports/img/*
 */#*
 out/*
+!out/*.pl
 tests/*
