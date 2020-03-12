@@ -10,7 +10,9 @@ cabal-version:       >=1.10
 library 
   exposed-modules:     HsToCiaoPP,
                        Dev.CiaoSyn
-                       Dev.Translation 
+                       Dev.Translation
+                       Dev.IDDictionary
+                       Dev.DataTypesTranslation
                        Language.Ciao.CoreToCiao, 
                        Language.Ciao.Types, 
                        Language.Ciao.Misc, 
@@ -20,5 +22,5 @@ library
   ghc-options:         -Wall -Werror
   hs-source-dirs:      src
   build-depends:       base, ghc >= 8.4.4
-  build-depends:       unordered-containers, mtl, hashable, regex-compat
+  build-depends:       unordered-containers, mtl, hashable, regex-compat, text
   default-language:    Haskell2010

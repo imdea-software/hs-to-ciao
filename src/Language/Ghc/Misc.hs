@@ -5,6 +5,9 @@
 
 module Language.Ghc.Misc where 
 
+
+import Prelude hiding ((<>))
+    
 import BasicTypes
 import DataCon
 import Outputable
@@ -13,19 +16,24 @@ import CoreSyn
 import PprCore ()
 import Data.Hashable
 import Unique
-import Var
+import DynFlags
+import Var 
 import Literal
-
+import Name (pprPrefixName)-- (pprOccName, getOccName)
 deriving instance Show AltCon
 
 instance Show Type where 
     show = showSDocUnsafe . ppr
            
 deriving instance Show CoreBind
+-- instance Show CoreBind where 
+--   show = showSDocUnsafe . ppr 
 
 instance Show DataCon where
   show = showSDocUnsafe . ppr
 
+showQualified :: Outputable a => a -> String 
+showQualified = showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
     
 instance Hashable Var where 
   hashWithSalt _ = getKey . getUnique
@@ -41,4 +49,4 @@ instance Show Coercion where
     show = showSDocUnsafe . ppr
          
 instance Show Var where
-    show x = showSDocUnsafe (ppr x)
+    show x = showSDocUnsafe (pprPrefixName x) -- pprOccName $ getOccName

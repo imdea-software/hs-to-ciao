@@ -5,7 +5,9 @@ module HsToCiaoPP (plugin) where
 import GhcPlugins
 --import Language.Ciao.CoreToCiao
 -- import Language.Ghc.Misc ()
+import Data.List (intercalate)
 import Dev.Translation
+import Dev.DataTypesTranslation
 import Data.Char (toLower)
 import Text.Regex (mkRegex, subRegex)
     
@@ -21,18 +23,21 @@ install _ todo =
 pass :: ModGuts -> CoreM ModGuts
 pass modguts= do 
     let name     = showSDocUnsafe $ pprModule $ mg_module modguts
+    let definedTypes = mg_tcs modguts -- pass this to a translation
     let hsBinds  = mg_binds modguts
-    let ciaoCore = translate hsBinds  
+    let ciaoCore = translate hsBinds
+    let translatedTypes = translateTypes definedTypes
     -- Print initial Haskell Binds 
     liftIO $ putStrLn $ "\n--- Haskell Binds: ---\n" 
-    liftIO $ putStrLn $ show hsBinds 
+    liftIO $ putStrLn $ show hsBinds
+    -- Write Core bindings into the .core file
+    liftIO $ writeFile (coreFileName name) (show hsBinds)
     -- Print Ciao translation
     liftIO $ putStrLn $ "\n--- Ciao Code: ---\n"
     liftIO $ putStrLn $ show ciaoCore
-    -- Write Core bindings into the .core file
-    liftIO $ writeFile (coreFileName name) (show hsBinds)
     -- Write translation into the .pl file
     liftIO $ writeFile (ciaoFileName name) ciaoModuleHeader
+    liftIO $ appendFile (ciaoFileName name) $ intercalate "\n\n" $ map show translatedTypes
     liftIO $ appendFile (ciaoFileName name) ((singletonListSimplify . show) ciaoCore)
     bindsOnlyPass (mapM return) modguts
 

@@ -1,17 +1,26 @@
 module Dev.CiaoSyn where
 
 import Data.List (intercalate)
+import Data.Char (toLower)
 
 newtype CiaoRegtype = CiaoRegtype (CiaoId, [(CiaoId, [CiaoId])])
 instance Show CiaoRegtype where
     show (CiaoRegtype (regtypeName, listOfCons)) =
-        ":- regtype " ++ (show regtypeName) ++ "/1\n" ++ (intercalate "\n" $ map showCons listOfCons)
+        ":- regtype " ++ (showTypeID regtypeName) ++ "/1.\n" ++ (intercalate "\n" $ map showCons listOfCons)
             where showCons = (\(tyConsName, tyConsArgs) ->
                               let varIDs = genVarIDs (length tyConsArgs) in
-                              show regtypeName ++ "(" ++ show tyConsName ++ "(" ++ intercalate ", " varIDs ++  ")) :- " ++
-                              intercalate ", " [ show tyCons ++ "(" ++ show varID ++ ")" | tyCons <- tyConsArgs, varID <- varIDs ])
+                              case length tyConsArgs of
+                                0 -> showTypeID regtypeName ++ "(" ++ showTypeID tyConsName ++ ")" ++ "."
+                                _ -> showTypeID regtypeName ++ "(" ++ showTypeID tyConsName ++ "(" ++ intercalate ", " varIDs ++  ")) :- " ++
+                                     (intercalate ", " $ zipWith (\tyCons varID -> showTypeID tyCons ++ "(" ++ varID ++ ")") tyConsArgs varIDs) ++ ".\n\n")
                   genVarIDs = (\len -> map (("X"++) . show) [1..len])
-                  
+
+showTypeID :: CiaoId -> String
+showTypeID (CiaoId "") = ""
+showTypeID (CiaoId str@(x:xs)) =
+    case str of
+      "Int" -> "num"
+      _ -> (toLower x):xs
     
 newtype CiaoProgram = CiaoProgram [(CiaoMetaPred, CiaoPred)]
 instance Show CiaoProgram where
