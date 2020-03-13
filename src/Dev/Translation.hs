@@ -77,17 +77,22 @@ ciaoOnlyIdsArgList list = map (CiaoArgId . CiaoId) $ map (hsIDtoCiaoVarID list) 
 
 hsIDtoCiaoFunctorID :: [String] -> String -> String
 hsIDtoCiaoFunctorID _ [] = []
-hsIDtoCiaoFunctorID idlist str = let renamedID = (map toLower . removeInvalid . idDictionary) (trace str str) in
-                                 if (renamedID `elem` idlist) then
+hsIDtoCiaoFunctorID idlist str = let renamedID = (dollarFilter . map toLower . removeInvalid . idDictionary) (trace str str) in
+                                 if (str `elem` idlist) then
                                      (toUpper . head $ renamedID):(tail renamedID)
                                  else
                                      renamedID
                           
 hsIDtoCiaoVarID :: [String] -> String -> String
 hsIDtoCiaoVarID _ [] = []
-hsIDtoCiaoVarID _ str = let renamedID = (map toLower . removeInvalid . idDictionary) (trace str str) in
+hsIDtoCiaoVarID _ str = let renamedID = (dollarFilter . map toLower . removeInvalid . idDictionary) (trace str str) in
                              (toUpper . head $ renamedID):(tail renamedID)
 
+dollarFilter :: String -> String
+dollarFilter str = let droppedDollar = dropWhile (/= '$') str in case droppedDollar of
+                                                                   [] -> str
+                                                                   _ -> droppedDollar
+                                                         
 removeInvalid :: String -> String
 removeInvalid [] = []
 removeInvalid "." = "."
