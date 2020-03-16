@@ -117,20 +117,31 @@ tracepp string a = trace (string ++ show a) a
                            
 translateFunBody :: [String] -> CoreExpr -> CiaoFunctionBody
 translateFunBody idlist (Var x) = CiaoFBTerm (CiaoId (((hsIDtoCiaoVarID idlist) . tracepp "showQualified" . showQualified) x)) []
+translateFunBody idlist (App x@(Var y) (Type _)) = case trace ("PATERROR?: " ++ show y) (showQualified y) of
+                                                "Control.Exception.Base.patError" -> CiaoEmptyFB
+                                                _ -> translateFunBody idlist x
 translateFunBody idlist (App x (Type _)) = translateFunBody idlist x
 translateFunBody _ (App (Var _) (Lit lit)) = CiaoFBLit $ translateLit lit
-translateFunBody idlist (Case app _ _ altlist) = CiaoCaseFunCall (CiaoFBCall $ CiaoFunctionCall (CiaoId $ ((hsIDtoCiaoVarID idlist) . showQualified) $ trace (show $ getCoreVarFromAppTree app) (getCoreVarFromAppTree app)) (reverse $ collectArgsTree idlist app [])) $ (reverse . map (getTermFromCaseAlt idlist)) altlist
-translateFunBody idlist expr = let (functor, isfunctor) = getFunctorFromAppTree idlist expr in
-                        case isfunctor of
-                          True -> CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
-                          False -> let arity = typeArity $ varType (trace (show $ getCoreVarFromAppTree expr) $ getCoreVarFromAppTree expr); listOfArgs = collectArgsTree idlist expr [] in
-                                   if length listOfArgs < arity - 1 then
-                                       CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
-                                   else
-                                       CiaoFBCall $ CiaoFunctionCall functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
+translateFunBody idlist (Case app _ _ altlist) = let var = getCoreVarFromAppTree app in
+                                                 case var of
+                                                   Nothing -> CiaoEmptyFB
+                                                   (Just justvar) ->
+                                                       CiaoCaseFunCall (CiaoFBCall $ CiaoFunctionCall (CiaoId $ ((hsIDtoCiaoVarID idlist) . showQualified) $ trace (show justvar) justvar) (reverse $ collectArgsTree idlist app [])) $ (reverse . map (getTermFromCaseAlt idlist)) altlist
+translateFunBody idlist expr = let (functor, isfunctor) = getFunctorFromAppTree idlist expr; varexpr = getCoreVarFromAppTree expr in
+                               case varexpr of
+                                 Nothing -> CiaoEmptyFB
+                                 (Just justexpr) ->
+                                     case isfunctor of
+                                       True -> CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
+                                       False -> let arity = typeArity $ varType (trace (show justexpr) justexpr); listOfArgs = collectArgsTree idlist expr [] in
+                                                if length listOfArgs < arity - 1 then
+                                                    CiaoFBTerm functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
+                                                else
+                                                    CiaoFBCall $ CiaoFunctionCall functor $ trace (show $ reverse $ collectArgsTree idlist expr []) (reverse $ collectArgsTree idlist expr [])
                                                   
-getCoreVarFromAppTree :: CoreExpr -> Var
-getCoreVarFromAppTree (Var x) = x
+getCoreVarFromAppTree :: CoreExpr -> Maybe Var
+getCoreVarFromAppTree (Var x) = Just x
+getCoreVarFromAppTree (Lit _) = Nothing
 getCoreVarFromAppTree (App x _) = getCoreVarFromAppTree x
 getCoreVarFromAppTree expr = error $ "Couldn't find the Var root of the App tree: " ++ (show expr)
                                           
@@ -149,14 +160,16 @@ collectArgsTree :: [String] -> CoreExpr -> [CiaoFunctionBody] -> [CiaoFunctionBo
 collectArgsTree idlist (Var x) args = let argID = ((hsIDtoCiaoVarID idlist) . showQualified) x in
                                       if argID !! 0 == '$' then args
                                       else (CiaoFBTerm (CiaoId argID) []):args
+collectArgsTree _ (App (Var y) (Type _)) args = case trace ("PATERROR? collectArgsTree: " ++ show y) (showQualified y) of
+                                                          "Control.Exception.Base.patError" -> []
+                                                          _ -> args
 collectArgsTree idlist (App (Var _) (Var y)) args = let argID = ((hsIDtoCiaoVarID idlist) . showQualified) y in
                                                     if argID !! 0 == '$' then args
                                                     else (CiaoFBTerm (CiaoId (((hsIDtoCiaoVarID idlist) . showQualified) y)) []):args
 collectArgsTree idlist (App x (Var y)) args = let argID = ((hsIDtoCiaoVarID idlist) . showQualified) y in
                                               if argID !! 0 == '$' then args
                                               else (CiaoFBTerm (CiaoId argID) []):(collectArgsTree idlist x args)
-collectArgsTree _ (App (Var _) (Type  _)) args = args
-collectArgsTree idlist (App x (Type  _)) args = collectArgsTree idlist x args
+collectArgsTree idlist (App x (Type _)) args = collectArgsTree idlist x args
 collectArgsTree idlist (App (Var _) app) args = (translateFunBody idlist app):args
 collectArgsTree idlist (App x app) args = (translateFunBody idlist app):(collectArgsTree idlist x args)
 collectArgsTree _ (Type _) args = args
