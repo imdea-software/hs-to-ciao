@@ -12,6 +12,7 @@ idDictionary str = case str of
                      "(-)" -> "substract"
                      "." -> "compose"
                      ":" -> "."
+                     "GHC.Base.$" -> "fun_apply"
                      "GHC.Types.[]" -> "[]"
                      "GHC.Types.True" -> "true"
                      "GHC.Types.False" -> "false"

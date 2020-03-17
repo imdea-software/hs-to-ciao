@@ -11,6 +11,9 @@ isthree(Ds_d2tf) := false.
 :- meta_predicate bool(goal,?).
 bool(X,T) :- (X -> T=true ; T=false).
 
+:- meta_predicate fun_apply(pred(2),?,?).
+fun_apply(F, X) := ~F(X).
+
 :- meta_predicate flip(pred(3),?,?,?).
 flip(F,X,Y) := ~F(Y,X).
 
