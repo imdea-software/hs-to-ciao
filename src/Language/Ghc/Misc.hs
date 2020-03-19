@@ -22,6 +22,8 @@ import Literal
 import Name (pprPrefixName)-- (pprOccName, getOccName)
 deriving instance Show AltCon
 
+data Environment = Environment { targetModuleNames :: [String] }
+
 instance Show Type where 
     show = showSDocUnsafe . ppr
            
@@ -32,9 +34,10 @@ deriving instance Show CoreBind
 instance Show DataCon where
   show = showSDocUnsafe . ppr
 
-showQualified :: Outputable a => a -> String 
-showQualified =  showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
-                --case takeWhile (/= '.') name of
+showHsID :: Outputable a => Environment -> a -> String
+showHsID _ = showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
+-- showHsID env x = let name = (showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr) x in
+--                  case takeWhile (/= '.') name of
                   
     
 instance Hashable Var where 

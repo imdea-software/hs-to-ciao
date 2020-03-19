@@ -10,6 +10,8 @@ import Dev.Translation
 import Dev.DataTypesTranslation
 import Data.Char (toLower)
 import Text.Regex (mkRegex, subRegex)
+
+import Control.Monad.Reader
     
 plugin :: Plugin
 plugin = defaultPlugin {
@@ -24,13 +26,15 @@ pass :: ModGuts -> CoreM ModGuts
 pass modguts= do
     hscEnv <- getHscEnv
     let targets = hsc_targets hscEnv
+    let tmNames = map (showSDocUnsafe . pprTargetId . targetId) targets
+    let env = Environment { targetModuleNames = tmNames }
     let name     = showSDocUnsafe $ pprModule $ mg_module modguts
     let definedTypes = mg_tcs modguts -- pass this to a translation
     let hsBinds  = mg_binds modguts
-    let ciaoCore = translate hsBinds
+    let ciaoCore = runReader (translate hsBinds) env
     let translatedTypes = translateTypes definedTypes
     liftIO $ putStrLn $ "\n--- TESTS FOR TARGETS ---\n"
-    liftIO $ putStrLn $ intercalate "\n\n" $ map (showSDocUnsafe . pprTargetId . targetId) targets
+    liftIO $ putStrLn $ intercalate "\n\n" $ tmNames
     -- Print initial Haskell Binds
     liftIO $ putStrLn $ "\n--- Haskell Binds: ---\n" 
     liftIO $ putStrLn $ show hsBinds
