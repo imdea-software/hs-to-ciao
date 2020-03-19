@@ -11,7 +11,6 @@ import CoreSyn
 import TyCoRep (Type(..))
 import GhcPlugins
 
--- Take into special consideration Haskell functions that return Bool
 
 placeholderPred :: (CiaoMetaPred, CiaoPred)
 placeholderPred = (CiaoMetaPred ("", []), EmptyPred)

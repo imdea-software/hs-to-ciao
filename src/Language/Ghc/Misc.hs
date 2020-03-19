@@ -33,7 +33,9 @@ instance Show DataCon where
   show = showSDocUnsafe . ppr
 
 showQualified :: Outputable a => a -> String 
-showQualified = showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
+showQualified =  showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
+                --case takeWhile (/= '.') name of
+                  
     
 instance Hashable Var where 
   hashWithSalt _ = getKey . getUnique

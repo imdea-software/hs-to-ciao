@@ -21,13 +21,17 @@ install _ todo =
   return (CoreDoPluginPass "CiaoTranslation" pass : todo)
 
 pass :: ModGuts -> CoreM ModGuts
-pass modguts= do 
+pass modguts= do
+    hscEnv <- getHscEnv
+    let targets = hsc_targets hscEnv
     let name     = showSDocUnsafe $ pprModule $ mg_module modguts
     let definedTypes = mg_tcs modguts -- pass this to a translation
     let hsBinds  = mg_binds modguts
     let ciaoCore = translate hsBinds
     let translatedTypes = translateTypes definedTypes
-    -- Print initial Haskell Binds 
+    liftIO $ putStrLn $ "\n--- TESTS FOR TARGETS ---\n"
+    liftIO $ putStrLn $ intercalate "\n\n" $ map (showSDocUnsafe . pprTargetId . targetId) targets
+    -- Print initial Haskell Binds
     liftIO $ putStrLn $ "\n--- Haskell Binds: ---\n" 
     liftIO $ putStrLn $ show hsBinds
     -- Write Core bindings into the .core file

@@ -97,6 +97,7 @@ instance Show CiaoTerm where
     show (CiaoNumber x) = show x
     show CiaoEmptyTerm = "" -- this should only be used with placeholders
 
+-- add fields with record syntax and 'data'                     
 type CiaoFunctor = CiaoId
 newtype CiaoId = CiaoId String deriving Eq
 instance Show CiaoId where
