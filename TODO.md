@@ -2,6 +2,15 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+19/3
+
+- TODO
+  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
+    - [ ] Implement Let within the Ciao syntax and the translation
+  - [ ] Make the `showQualified` function modular in the sense
+    - [ ] Add a Reader monad to the whole translation
+  - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
+
 28/2
 
 - TODO
