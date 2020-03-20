@@ -7,9 +7,11 @@ IN THE FUTURE:
 - TODO
   - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
     - [ ] Implement Let within the Ciao syntax and the translation
-  - [ ] Make the `showQualified` function modular in the sense
+  - [ ] Make the `showQualified` function modular
     - [ ] Add a Reader monad to the whole translation
   - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
+  - [ ] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that
+    - [ ] Find out how to make custom pretty-printing with CiaoPP
 
 28/2
 
