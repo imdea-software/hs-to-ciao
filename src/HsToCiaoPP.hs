@@ -4,7 +4,7 @@ module HsToCiaoPP (plugin) where
 
 import GhcPlugins
 --import Language.Ciao.CoreToCiao
--- import Language.Ghc.Misc ()
+import Language.Ghc.Misc
 import Data.List (intercalate)
 import Dev.Translation
 import Dev.DataTypesTranslation
