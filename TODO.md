@@ -2,6 +2,16 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+26/3
+
+- TODO
+  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
+    - [ ] Implement Let within the Ciao syntax and the translation
+    - [ ] Ignore the `patError`
+  - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
+  - [ ] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
+    - [ ] Find out how to make custom pretty-printing with CiaoPP
+
 19/3
 
 - TODO
