@@ -5,7 +5,6 @@
 
 module Language.Ghc.Misc where 
 
-
 import Prelude hiding ((<>))
     
 import BasicTypes
@@ -19,10 +18,9 @@ import Unique
 import DynFlags
 import Var 
 import Literal
+import Dev.Environment
 import Name (pprPrefixName)-- (pprOccName, getOccName)
 deriving instance Show AltCon
-
-data Environment = Environment { targetModuleNames :: [String] }
 
 instance Show Type where 
     show = showSDocUnsafe . ppr
