@@ -1,0 +1,14 @@
+#!/usr/bin/env ciao-shell
+% -*- mode: ciao; -*-
+
+:- use_module(ciaopp(ciaopp)).
+
+main([File]):- 
+    module(File),
+    analyze(nf),
+    analyze(shfr),
+    analyze(eterms),
+    analyze(resources),
+    output.
+
+    

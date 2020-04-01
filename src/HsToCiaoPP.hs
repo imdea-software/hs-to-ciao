@@ -3,15 +3,15 @@
 module HsToCiaoPP (plugin) where
 
 import GhcPlugins
+import System.Process
 --import Language.Ciao.CoreToCiao
-import Language.Ghc.Misc
+--import Language.Ghc.Misc
 import Data.List (intercalate)
 import Dev.Translation
 import Dev.DataTypesTranslation
+import Dev.Environment
 import Data.Char (toLower)
 import Text.Regex (mkRegex, subRegex)
-
-import Control.Monad.Reader
     
 plugin :: Plugin
 plugin = defaultPlugin {
@@ -26,15 +26,13 @@ pass :: ModGuts -> CoreM ModGuts
 pass modguts= do
     hscEnv <- getHscEnv
     let targets = hsc_targets hscEnv
-    let tmNames = map (showSDocUnsafe . pprTargetId . targetId) targets
-    let env = Environment { targetModuleNames = tmNames }
     let name     = showSDocUnsafe $ pprModule $ mg_module modguts
     let definedTypes = mg_tcs modguts -- pass this to a translation
     let hsBinds  = mg_binds modguts
-    let ciaoCore = runReader (translate hsBinds) env
+    let ciaoCore = translate targets hsBinds
     let translatedTypes = translateTypes definedTypes
     liftIO $ putStrLn $ "\n--- TESTS FOR TARGETS ---\n"
-    liftIO $ putStrLn $ intercalate "\n\n" $ tmNames
+    liftIO $ putStrLn $ intercalate "\n\n" $ (map getTargetName targets)
     -- Print initial Haskell Binds
     liftIO $ putStrLn $ "\n--- Haskell Binds: ---\n" 
     liftIO $ putStrLn $ show hsBinds
@@ -43,6 +41,8 @@ pass modguts= do
     -- Print Ciao translation
     liftIO $ putStrLn $ "\n--- Ciao Code: ---\n"
     liftIO $ putStrLn $ show ciaoCore
+    liftIO $ putStrLn $ "\n\nEXECUTING BIG-O ANALYSIS SCRIPT:"
+    _ <- liftIO $ rawSystem "./analysis_scripts/analyze_bigo" [ciaoFileName name]
     -- Write translation into the .pl file
     liftIO $ writeFile (ciaoFileName name) ciaoModuleHeader
     liftIO $ appendFile (ciaoFileName name) $ intercalate "\n\n" $ map show translatedTypes
@@ -54,7 +54,7 @@ pass modguts= do
 -- the actual code, really
 ciaoModuleHeader :: String
 ciaoModuleHeader = ":- module(_,_,[assertions, regtypes, functional, hiord]).\n" ++
-                   ":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').\n\n"
+                   ":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').\n"
                   
 coreFileName :: String -> String
 coreFileName name = "./out/" ++ map toLower name ++ ".core"
