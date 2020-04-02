@@ -2,6 +2,26 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+9/4
+
+- TODO  
+  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
+    - [ ] Keep track of the bound/unbound variables
+      - [ ] Change the Reader monad into a State monad
+    - [ ] Implement Let within the Ciao syntax and the translation
+    - [ ] Ignore the `patError`
+  - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
+  - [x] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
+    - [ ] Find out how to make custom pretty-printing with CiaoPP
+    - [ ] Check if importing the `ciao_prelude` file is now safe
+
+2/4
+
+- TODO
+  - [ ] Start my UPM thesis
+  - [ ] Check the Haskell Symposium Formatting template
+    - [ ] Add these two in the repo in imdea-software org
+
 26/3
 
 - TODO
