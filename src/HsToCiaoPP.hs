@@ -3,11 +3,13 @@
 module HsToCiaoPP (plugin) where
 
 import GhcPlugins
+import System.Process
 --import Language.Ciao.CoreToCiao
--- import Language.Ghc.Misc ()
+--import Language.Ghc.Misc
 import Data.List (intercalate)
 import Dev.Translation
 import Dev.DataTypesTranslation
+import Dev.Environment
 import Data.Char (toLower)
 import Text.Regex (mkRegex, subRegex)
     
@@ -27,10 +29,10 @@ pass modguts= do
     let name     = showSDocUnsafe $ pprModule $ mg_module modguts
     let definedTypes = mg_tcs modguts -- pass this to a translation
     let hsBinds  = mg_binds modguts
-    let ciaoCore = translate hsBinds
+    let ciaoCore = translate targets hsBinds
     let translatedTypes = translateTypes definedTypes
     liftIO $ putStrLn $ "\n--- TESTS FOR TARGETS ---\n"
-    liftIO $ putStrLn $ intercalate "\n\n" $ map (showSDocUnsafe . pprTargetId . targetId) targets
+    liftIO $ putStrLn $ intercalate "\n\n" $ (map getTargetName targets)
     -- Print initial Haskell Binds
     liftIO $ putStrLn $ "\n--- Haskell Binds: ---\n" 
     liftIO $ putStrLn $ show hsBinds
@@ -39,6 +41,8 @@ pass modguts= do
     -- Print Ciao translation
     liftIO $ putStrLn $ "\n--- Ciao Code: ---\n"
     liftIO $ putStrLn $ show ciaoCore
+    liftIO $ putStrLn $ "\n\nEXECUTING BIG-O ANALYSIS SCRIPT:"
+    _ <- liftIO $ rawSystem "./analysis_scripts/analyze_bigo" [ciaoFileName name]
     -- Write translation into the .pl file
     liftIO $ writeFile (ciaoFileName name) ciaoModuleHeader
     liftIO $ appendFile (ciaoFileName name) $ intercalate "\n\n" $ map show translatedTypes

@@ -1,0 +1,14 @@
+#!/usr/bin/env ciao-shell
+% -*- mode: ciao; -*-
+
+:- use_module(ciaopp(ciaopp)).
+:- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').
+
+main([File]):- 
+    module(File),
+    analyze(shfr),
+    analyze(eterms),
+    analyze(steps_o),
+    output.
+
+    

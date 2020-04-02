@@ -13,6 +13,7 @@ library
                        Dev.Translation
                        Dev.IDDictionary
                        Dev.DataTypesTranslation
+                       Dev.Environment
                        Language.Ciao.CoreToCiao, 
                        Language.Ciao.Types, 
                        Language.Ciao.Misc, 
@@ -22,5 +23,5 @@ library
   ghc-options:         -Wall -Werror
   hs-source-dirs:      src
   build-depends:       base, ghc >= 8.4.4
-  build-depends:       unordered-containers, mtl, hashable, regex-compat, text
+  build-depends:       unordered-containers, mtl, hashable, regex-compat, text, process
   default-language:    Haskell2010

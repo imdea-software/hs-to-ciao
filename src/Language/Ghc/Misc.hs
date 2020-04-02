@@ -5,7 +5,6 @@
 
 module Language.Ghc.Misc where 
 
-
 import Prelude hiding ((<>))
     
 import BasicTypes
@@ -19,6 +18,7 @@ import Unique
 import DynFlags
 import Var 
 import Literal
+import Dev.Environment
 import Name (pprPrefixName)-- (pprOccName, getOccName)
 deriving instance Show AltCon
 
@@ -32,9 +32,13 @@ deriving instance Show CoreBind
 instance Show DataCon where
   show = showSDocUnsafe . ppr
 
-showQualified :: Outputable a => a -> String 
-showQualified =  showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
-                --case takeWhile (/= '.') name of
+showHsID :: Outputable a => Environment -> a -> String
+-- showHsID _ = showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
+showHsID env x = let name = (showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr) x
+                     prefix = takeWhile (/= '.') name in
+                 if elem prefix (map ((takeWhile (/= '.')) . tail . (dropWhile (/= '/')) . getTargetName) $ targetModuleNames env) then
+                     tail . (dropWhile (/= '.')) $ name
+                 else name
                   
     
 instance Hashable Var where 

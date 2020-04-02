@@ -1,4 +1,4 @@
-:- module(_,_,[functional, hiord]).
+:- module(_,_,[assertions, functional, hiord]).
 
 %%%%% TESTING FUNCTIONS
 
@@ -22,6 +22,9 @@ compose(F, G, X) := ~F(~G(X)).
 
 %%%%%% Comparison operations
 
+:- meta_predicate equals(?,?,?).
+equals(X,Y) := ~bool(X == Y).
+
 :- meta_predicate less(?,?,?).
 less(X,Y) := ~bool(X < Y).
 
@@ -35,8 +38,8 @@ less_or_eq(X,Y) := ~bool(X =< Y).
 great_or_eq(X,Y) := ~bool(X >= Y).
 
 %%%%%% Arithmetic operations
-:- meta_predicate sum(?,?,?).
-sum(X, Y) := X + Y.
+:- meta_predicate plus(?,?,?).
+plus(X, Y) := X + Y.
 
 :- meta_predicate substract(?,?,?).
 substract(X, Y) := X - Y.
@@ -64,6 +67,7 @@ foldl(F, Base, .(X,XS)) := ~foldl(F, ~F(Base, X), XS).
 map(_, []) := [].
 map(F, [X|Xs]) := [~F(X) | ~map(F, Xs)].
 
+:- entry append/3 : {list, ground} * {list, ground} * var.
 :- meta_predicate append(?,?,?).
 append([], X) := X.
 append([H | X], Y) := [H | ~append(X,Y)].
@@ -71,4 +75,7 @@ append([H | X], Y) := [H | ~append(X,Y)].
 :- meta_predicate enumfromto(?,?,?).
 enumfromto(End, End) := [End].
 enumfromto(Start, End) := [Start | ~enumfromto(Start + 1, End)].
-    
+
+:- meta_predicate length(?,?).
+length([]) := 0.
+length([X | Xs]) := 1 + ~length(Xs).

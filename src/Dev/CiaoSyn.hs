@@ -22,16 +22,21 @@ showTypeID (CiaoId str@(x:xs)) =
       "Int" -> "num"
       _ -> (toLower x):xs
     
-newtype CiaoProgram = CiaoProgram [(CiaoMetaPred, CiaoPred)]
+newtype CiaoProgram = CiaoProgram [(CiaoMetaPred, CiaoEntry, CiaoPred)]
 instance Show CiaoProgram where
     show (CiaoProgram prediclist) = intercalate "\n" $ map showAndConcatTuple prediclist
-        where showAndConcatTuple = (\(x,y) -> show x ++ "\n" ++ show y)
+        where showAndConcatTuple = (\(x,y,z) -> show x ++ "\n" ++ show y ++ "\n" ++ show z)
                                    
 newtype CiaoMetaPred = CiaoMetaPred (String, [Int])
 instance Show CiaoMetaPred where
     show (CiaoMetaPred (_, [])) = ""
     show (CiaoMetaPred (predname, arities)) = ":- meta_predicate " ++ predname ++ "(" ++ (intercalate "," (map (\x -> if x == 1 then "?" else "pred(" ++ show x ++ ")") arities)) ++ ",?)."
-                                    
+
+newtype CiaoEntry = CiaoEntry (String, [String])
+instance Show CiaoEntry where
+    show (CiaoEntry (_, [])) = ""
+    show (CiaoEntry (predname, types)) = ":- entry " ++ predname ++ "/" ++ (show $ (length types) + 1) ++ " : " ++ (intercalate " * " types) ++ " * var."
+    
 data CiaoPred = CPredC CiaoPredC | CPredF CiaoPredF | EmptyPred
 instance Show CiaoPred where
     show (CPredC predic) = show predic
@@ -47,10 +52,14 @@ newtype CiaoPredF = CiaoPredF [CiaoFunction]
 instance Show CiaoPredF where
     show (CiaoPredF []) = ""
     show (CiaoPredF funList) = (intercalate "\n" $ map show funList) ++ "\n"
+
+newtype CiaoBind = CiaoBind (CiaoId, CiaoFunctionBody)
+instance Show CiaoBind where
+    show (CiaoBind (ciaoid, ciaofunbody)) = show ciaoid ++ " = " ++ show ciaofunbody
                                  
-data CiaoFunction = CiaoFunction CiaoHead CiaoFunctionBody
+data CiaoFunction = CiaoFunction CiaoHead CiaoFunctionBody [CiaoBind]
 instance Show CiaoFunction where
-    show (CiaoFunction ciaohead fcall) = show ciaohead ++ " := " ++ show fcall ++ "."
+    show (CiaoFunction ciaohead fcall bindlist) = show ciaohead ++ " := " ++ show fcall ++ (if null bindlist then "" else " :- \n    ") ++ (intercalate ",\n    " $ map show bindlist) ++ "."
     
 data CiaoFunctionBody = CiaoFBTerm CiaoFunctor [CiaoFunctionBody] | CiaoFBCall CiaoFunctionCall | CiaoFBLit CiaoLiteral | CiaoCaseVar CiaoId [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoCaseFunCall CiaoFunctionBody [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoEmptyFB
 instance Show CiaoFunctionBody where

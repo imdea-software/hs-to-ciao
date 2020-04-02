@@ -7,18 +7,23 @@ module Dev.IDDictionary where
 --substringIDDictionary :: String -> String
                          
 idDictionary :: String -> String
-idDictionary str = case str of                     
+idDictionary str = case str of
+                     "Data.Foldable.length" -> "length"
+                     "Data.Foldable.foldl" -> "foldl"
+                     "GHC.List.filter" -> "filter"
                      "(<)" -> "less"
                      "(-)" -> "substract"
                      "." -> "compose"
                      ":" -> "."
                      "GHC.Base.$" -> "fun_apply"
+                     "GHC.Base.." -> "compose"
                      "GHC.Types.[]" -> "[]"
                      "GHC.Types.True" -> "true"
                      "GHC.Types.False" -> "false"
                      "GHC.Num.*" -> "mult"
                      "GHC.Num.-" -> "substract"
                      "GHC.Num.+" -> "sum"
+                     "GHC.Real.div" -> "div"
                      "(:)" -> "."
                      "GHC.Types.:" -> "."
                      "True" -> "true"
@@ -28,4 +33,5 @@ idDictionary str = case str of
                      "GHC.Base.map" -> "map"
                      "GHC.Enum.enumFromTo" -> "enumfromto"
                      "GHC.Classes.<" -> "less"
+                     "GHC.Classes.==" -> "equals"
                      _ -> str
