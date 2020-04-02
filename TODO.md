@@ -9,7 +9,7 @@ IN THE FUTURE:
     - [ ] Implement Let within the Ciao syntax and the translation
     - [ ] Ignore the `patError`
   - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
-  - [ ] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
+  - [x] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
     - [ ] Find out how to make custom pretty-printing with CiaoPP
 
 19/3
