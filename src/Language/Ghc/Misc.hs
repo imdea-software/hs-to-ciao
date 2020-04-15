@@ -32,7 +32,7 @@ deriving instance Show CoreBind
 instance Show DataCon where
   show = showSDocUnsafe . ppr
 
-showHsID :: Outputable a => Environment -> a -> String
+showHsID :: Environment -> Id -> String
 -- showHsID _ = showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr
 showHsID env x = let name = (showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr) x
                      prefix = takeWhile (/= '.') name in
