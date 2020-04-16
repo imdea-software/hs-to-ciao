@@ -7,7 +7,7 @@ IN THE FUTURE:
 - TODO  
   - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
     - [ ] Keep track of the bound/unbound variables
-      - [ ] Change the Reader monad into a State monad
+      - [x] Change the Reader monad into a State monad
     - [ ] Implement Let within the Ciao syntax and the translation
     - [ ] Ignore the `patError`
   - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
