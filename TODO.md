@@ -2,6 +2,22 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+16/4
+
+- TODO  
+  - [ ] Related work for the thesis draft
+    - [ ] TiML
+    - [ ] Liquidate your Assets
+    - [ ] A General Framework for Static Cost Analysis of Parallel Logic Programs
+  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
+    - [ ] Keep track of the bound/unbound variables
+    - [ ] Implement Let within the Ciao syntax and the translation
+    - [ ] Ignore the `patError`
+  - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
+  - [ ] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
+    - [ ] Find out how to make custom pretty-printing with CiaoPP
+    - [ ] Check if importing the `ciao_prelude` file is now safe
+
 9/4
 
 - TODO  
@@ -11,7 +27,7 @@ IN THE FUTURE:
     - [ ] Implement Let within the Ciao syntax and the translation
     - [ ] Ignore the `patError`
   - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
-  - [x] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
+  - [ ] Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
     - [ ] Find out how to make custom pretty-printing with CiaoPP
     - [ ] Check if importing the `ciao_prelude` file is now safe
 
