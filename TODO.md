@@ -5,10 +5,10 @@ IN THE FUTURE:
 16/4
 
 - TODO  
-  - [ ] Related work for the thesis draft
-    - [ ] TiML
-    - [ ] Liquidate your Assets
-    - [ ] A General Framework for Static Cost Analysis of Parallel Logic Programs
+  - [x] Related work for the thesis draft
+    - [x] TiML
+    - [x] Liquidate your Assets
+    - [x] A General Framework for Static Cost Analysis of Parallel Logic Programs
   - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
     - [ ] Keep track of the bound/unbound variables
     - [ ] Implement Let within the Ciao syntax and the translation
