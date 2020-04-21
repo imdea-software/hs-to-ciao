@@ -2,6 +2,11 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+23/4
+
+- TODO
+  - [ ] Add `entry` support for higher-order functions in Ciao
+
 16/4
 
 - TODO  
