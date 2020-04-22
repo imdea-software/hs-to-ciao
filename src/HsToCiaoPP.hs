@@ -41,12 +41,12 @@ pass modguts= do
     -- Print Ciao translation
     liftIO $ putStrLn $ "\n--- Ciao Code: ---\n"
     liftIO $ putStrLn $ show ciaoCore
-    liftIO $ putStrLn $ "\n\nEXECUTING BIG-O ANALYSIS SCRIPT:"
-    _ <- liftIO $ rawSystem "./analysis_scripts/analyze_bigo" [ciaoFileName name]
     -- Write translation into the .pl file
     liftIO $ writeFile (ciaoFileName name) ciaoModuleHeader
     liftIO $ appendFile (ciaoFileName name) $ intercalate "\n\n" $ map show translatedTypes
     liftIO $ appendFile (ciaoFileName name) ((singletonListSimplify . show) ciaoCore)
+    liftIO $ putStrLn $ "\n\nEXECUTING BIG-O ANALYSIS SCRIPT:"
+    _ <- liftIO $ rawSystem "./analysis_scripts/analyze_bigo" [ciaoFileName name]
     bindsOnlyPass (mapM return) modguts
 
 -- things required for the Ciao programs to work as expected
