@@ -190,14 +190,14 @@ translateFunBody expr =
                     True ->
                         do
                           collectedArgs <- collectArgsTree expr []
-                          return $ CiaoFBTerm functor $ trace (show $ reverse $ collectedArgs) (reverse $ collectedArgs)
+                          return $ CiaoFBTerm functor $ trace ("COLLECTED ARGS #1: " ++ (show $ reverse $ collectedArgs)) (drop 1 $ reverse $ collectedArgs)
                     False -> let arity = typeArity $ varType (trace (show justexpr) justexpr) in
                         do
                           collectedArgs <- collectArgsTree expr []
                           if length collectedArgs < arity - 1 then
-                              return $ CiaoFBTerm functor $ trace (show $ reverse $ collectedArgs) (reverse $ collectedArgs)
+                              return $ CiaoFBTerm functor $ trace ("COLLECTED ARGS #2: " ++ (show $ reverse $ collectedArgs)) (reverse $ collectedArgs)
                           else
-                              return $ CiaoFBCall $ CiaoFunctionCall functor $ trace (show $ reverse $ collectedArgs) (reverse $ collectedArgs)
+                              return $ CiaoFBCall $ CiaoFunctionCall functor $ trace ("COLLECTED ARGS #3: " ++ (show $ reverse $ collectedArgs)) (reverse $ collectedArgs)
                                                   
 getCoreVarFromAppTree :: CoreExpr -> Maybe Var
 getCoreVarFromAppTree (Var x) = Just x
