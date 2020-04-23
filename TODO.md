@@ -5,7 +5,17 @@ IN THE FUTURE:
 23/4
 
 - TODO
-  - [ ] Add `entry` support for higher-order functions in Ciao
+  - [ ] Read TiML and note down questions for Niki
+  - [ ] Define the `max` function, and a function that uses it
+    - [ ] Inspect the Core to see how it's represented
+    - [ ] Define some Ciao predicate that behaves similarly
+  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
+    - [ ] Fix the 2 issues with mergeSort
+  - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
+  - [ ] ASK PEDRO: Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
+    - [ ] Add `entry` support for higher-order functions in Ciao
+    - [ ] Find out how to make custom pretty-printing with CiaoPP
+    - [ ] Check if importing the `ciao_prelude` file is now safe
 
 16/4
 
