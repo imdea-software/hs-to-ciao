@@ -59,7 +59,10 @@ instance Show CiaoBind where
                                  
 data CiaoFunction = CiaoFunction CiaoHead CiaoFunctionBody [CiaoBind]
 instance Show CiaoFunction where
-    show (CiaoFunction ciaohead fcall bindlist) = show ciaohead ++ " := " ++ show fcall ++ (if null bindlist then "" else " :- \n    ") ++ (intercalate ",\n    " $ map show bindlist) ++ "."
+    show (CiaoFunction ciaohead fcall bindlist) =
+        case fcall of
+          CiaoEmptyFB -> ""
+          _ -> show ciaohead ++ " := " ++ show fcall ++ (if null bindlist then "" else " :- \n    ") ++ (intercalate ",\n    " $ map show bindlist) ++ "."
     
 data CiaoFunctionBody = CiaoFBTerm CiaoFunctor [CiaoFunctionBody] | CiaoFBCall CiaoFunctionCall | CiaoFBLit CiaoLiteral | CiaoCaseVar CiaoId [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoCaseFunCall CiaoFunctionBody [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoEmptyFB
 instance Show CiaoFunctionBody where
