@@ -9,13 +9,16 @@ IN THE FUTURE:
   - [ ] Define the `max` function, and a function that uses it
     - [ ] Inspect the Core to see how it's represented
     - [ ] Define some Ciao predicate that behaves similarly
-  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples work
+  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples translate properly
     - [ ] Fix the 2 issues with mergeSort
   - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
-  - [ ] ASK PEDRO: Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
-    - [ ] Add `entry` support for higher-order functions in Ciao
-    - [ ] Find out how to make custom pretty-printing with CiaoPP
-    - [ ] Check if importing the `ciao_prelude` file is now safe
+  - [x] ASK PEDRO: Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
+    - [x] Add `entry` support for higher-order functions in Ciao
+      - Our biggest issue yet; right now, we can't perform analysis over higher-order functions, since they still have some work left to do in that regard. I told Pedro to keep me updated on that
+    - [x] Find out how to make custom pretty-printing with CiaoPP
+      - The Ciao team will be taking care of that, we will give them indications on how we want things to be printed, and then we'll just have to activate the corresponding flags when we want to analyze in CiaoPP
+    - [x] Check if importing the `ciao_prelude` file is now safe
+      - It's not; as a temporal solution, I'll be adding the required predicates for our translated functions into the resulting source file
 
 16/4
 
