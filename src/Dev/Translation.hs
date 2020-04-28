@@ -17,8 +17,12 @@ import CoreSyn
 import TyCoRep (Type(..))
 import GhcPlugins
     
-placeholderPred :: (CiaoMetaPred, CiaoEntry, CiaoPred)
-placeholderPred = (CiaoMetaPred ("", []), CiaoEntry ("", []), EmptyPred)
+placeholderFunctor :: CiaoFunctor
+placeholderFunctor = CiaoFunctor { functorName = CiaoId ""
+                                 , functorArity = 0
+                                 , functorMetaPred = CiaoMetaPred ("", [])
+                                 , functorEntry = CiaoEntry ("", [])
+                                 , functorPredDefinition = EmptyPred }
 
 translate :: [Target] -> [CoreBind] -> CiaoProgram
 -- translate binds = do
@@ -26,22 +30,24 @@ translate :: [Target] -> [CoreBind] -> CiaoProgram
 --   return (CiaoProgram res)
 translate targets binds = CiaoProgram $ map (fst . (\bind -> runState (translateBind bind) (Environment targets (collectLetBinds bind) []))) binds
                   
-translateBind :: CoreBind -> Env (CiaoMetaPred, CiaoEntry, CiaoPred)
+translateBind :: CoreBind -> Env CiaoFunctor
 translateBind (Rec list) = let (var, exprBind) = list !! 0 in
                            translateCoreBndr var exprBind
 translateBind (NonRec var exprBind) = translateCoreBndr var exprBind
           
-translateCoreBndr :: CoreBndr -> CoreExpr -> Env (CiaoMetaPred, CiaoEntry, CiaoPred)
+translateCoreBndr :: CoreBndr -> CoreExpr -> Env CiaoFunctor
 translateCoreBndr var exprBind = do
   env <- get
   let name = hsIDtoCiaoFunctorID [] $ showHsID env $
                                  trace (showSDocUnsafe . ppr $ var) $
                                  trace (showSDocUnsafe . ppr . varType $ var) $
                                  trace (show . funArityOfArguments . varType $ var) var
-  let metapred = CiaoMetaPred (name, funArityOfArguments $ varType var)
+  let argsArities = funArityOfArguments $ varType var
+  let arity = length $ argsArities
+  let metapred = CiaoMetaPred (name, argsArities)
   let entry = CiaoEntry (name, init $ hsTypeToCiaoEntryTypes $ varType var)
   if name !! 0 == '$' then
-     return placeholderPred
+     return placeholderFunctor
   else
       let arglist = trace (show $ fst funStrippedArgs) (fst funStrippedArgs)
           funStrippedArgs = unfoldLam exprBind
@@ -52,14 +58,16 @@ translateCoreBndr var exprBind = do
               put $ env {boundIds = arglist}
               (varID, alts) <- fromCaseGetVarIDAndAlts caseExpr
               listOfFunctions <- splitCaseClauses varID (CiaoTerm (CiaoId name) $ (ciaoOnlyIdsArgList . map (showSDocUnsafe . ppr)) arglist) alts
-              return (metapred, entry, CPredF (CiaoPredF listOfFunctions))
+              let predDefinition = CPredF (CiaoPredF listOfFunctions)
+              return CiaoFunctor { functorName = (CiaoId name), functorArity = arity, functorMetaPred = metapred, functorEntry = entry, functorPredDefinition = predDefinition }
         _ ->
             do
               put $ env {boundIds = arglist}
               translatedBody <- translateFunBody remainingExpr
               updatedEnv <- get -- Updated env to retrieve the new info
               ciaoBinds <- mapM letBindToCiao $ letBinds updatedEnv
-              return (metapred, entry, CPredF (CiaoPredF [CiaoFunction (CiaoTerm (CiaoId name) $ (ciaoOnlyIdsArgList . map (showSDocUnsafe . ppr)) arglist) translatedBody ciaoBinds]))
+              let predDefinition = CPredF (CiaoPredF [CiaoFunction (CiaoTerm (CiaoId name) $ (ciaoOnlyIdsArgList . map (showSDocUnsafe . ppr)) arglist) translatedBody ciaoBinds])
+              return CiaoFunctor { functorName = (CiaoId name), functorArity = arity, functorMetaPred = metapred, functorEntry = entry, functorPredDefinition = predDefinition }
                      
 unfoldLam :: Expr b -> ([b], Expr b)
 unfoldLam  = go []
@@ -218,7 +226,7 @@ getTermFromCaseAlt (altcon, conargs, altExpr) = case altcon of
                                                        return (CiaoFBLit $ translateLit lit, translatedBody)
                                                  DEFAULT -> return (CiaoEmptyFB, CiaoEmptyFB) -- placeholder
 
-getFunctorFromAppTree :: CoreExpr -> Env (CiaoFunctor, Bool)
+getFunctorFromAppTree :: CoreExpr -> Env (CiaoFunctorName, Bool)
 getFunctorFromAppTree (Var x) =
     do
       env <- get
