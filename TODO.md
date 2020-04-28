@@ -6,9 +6,9 @@ IN THE FUTURE:
 
 - TODO
   - [ ] Read TiML and note down questions for Niki
-  - [ ] Define the `max` function, and a function that uses it
-    - [ ] Inspect the Core to see how it's represented
-    - [ ] Define some Ciao predicate that behaves similarly
+  - [x] Define the `max` function, and a function that uses it
+    - [x] Inspect the Core to see how it's represented
+    - [x] Define some Ciao predicate that behaves similarly
   - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples translate properly
     - [ ] Fix the 2 issues with mergeSort
   - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
