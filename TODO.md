@@ -11,7 +11,7 @@ IN THE FUTURE:
     - [x] Define some Ciao predicate that behaves similarly
   - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples translate properly
     - [ ] Fix the 2 issues with mergeSort
-  - [ ] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
+  - [x] Add to CiaoFunctor in the syntax the arity of the functor (and use record syntax for fields)
   - [x] ASK PEDRO: Call CiaoPP to analyze an example, and make it output the Big-O analysis for that (`list append`)
     - [x] Add `entry` support for higher-order functions in Ciao
       - Our biggest issue yet; right now, we can't perform analysis over higher-order functions, since they still have some work left to do in that regard. I told Pedro to keep me updated on that
