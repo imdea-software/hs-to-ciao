@@ -2,6 +2,22 @@ IN THE FUTURE:
 
 - [ ] Figure out what kinds of analysis we can perform over our target manual examples
 
+30/4
+
+- TODO
+  - [ ] Read TiML and note down questions for Niki
+  - [ ] Define `InsertionSort` using typeclasses
+    - [ ] Do all of the below steps for `Max` first
+    - [ ] Define a custom `MyOrd` typeclass
+    - [ ] Define the desugared version of `InsertionSort` using a data type
+    - [ ] Translate this into Ciao
+    - [ ] Translate `InsertionSort` using `MyOrd`
+    - [ ] Translate `InsertionSort` using `Ord`
+  - [ ] Tell Pedro how we want Big-O prettyprinting (check Mattermost for Niki's pointers on this)
+  - [ ] Include the required predicates for our translated functions into the resulting source file
+  - [ ] Make the mergeSort and quickSort, ghc's smooth merge sort examples translate properly
+    - [ ] Fix the 2 issues with mergeSort
+
 23/4
 
 - TODO
