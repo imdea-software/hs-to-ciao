@@ -2,6 +2,7 @@ module Dev.CiaoSyn where
 
 import Data.List (intercalate)
 import Data.Char (toLower)
+import TyCoRep (Type(..))
 
 newtype CiaoRegtype = CiaoRegtype (CiaoId, [(CiaoId, [CiaoId])])
 instance Show CiaoRegtype where
@@ -28,15 +29,16 @@ instance Show CiaoProgram where
 
 data CiaoFunctor = CiaoFunctor { functorName :: CiaoFunctorName
                                , functorArity :: Int
+                               , functorHsType :: ([Type], Type) -- List of argument types, and return type
                                , functorMetaPred :: CiaoMetaPred
                                , functorEntry :: CiaoEntry
-                               , functorPredDefinition :: CiaoPred }
+                               , functorPredDefinition :: CiaoPred
+                               , functorSubfunctorIds :: [String] }
 instance Show CiaoFunctor where
-    show functor = intercalate "\n" $
-                   [show (functorMetaPred functor),
-                    show (functorEntry functor),
-                    show (functorPredDefinition functor)]
-                                   
+    show functor =  intercalate "\n" $ [show (functorMetaPred functor),
+                                        show (functorEntry functor),
+                                        show (functorPredDefinition functor)]
+                         
 newtype CiaoMetaPred = CiaoMetaPred (String, [Int])
 instance Show CiaoMetaPred where
     show (CiaoMetaPred (_, [])) = ""
@@ -119,7 +121,6 @@ instance Show CiaoTerm where
     show (CiaoNumber x) = show x
     show CiaoEmptyTerm = "" -- this should only be used with placeholders
 
--- add fields with record syntax and 'data'                     
 type CiaoFunctorName = CiaoId
 newtype CiaoId = CiaoId String deriving Eq
 instance Show CiaoId where

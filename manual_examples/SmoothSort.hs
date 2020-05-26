@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 module SmoothSort where
 
 -- "A smooth applicative merge sort".

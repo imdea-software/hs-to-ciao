@@ -1,0 +1,25 @@
+module PrettyPrinters.GeneralPrinter where
+    
+import System.Directory
+import PrettyPrinters.AnalysisKinds
+import PrettyPrinters.BigO
+    
+prettyPrintAnalysis :: String -> KindOfAnalysis -> IO ()
+prettyPrintAnalysis fileName analysisKind =
+    do fileContents <- readFile $ "./out/prueba.pl" --"./out/" ++ fileName ++ oldFileSuffix
+       let prettifiedOutput = prettifier fileContents
+       if prettifiedOutput == "" then
+           putStrLn "\nWARNING: Since the analysis didn't finish properly, no pretty-printing has been done.\n"
+       else
+           do
+             writeFile ("./out/" ++ fileName ++ fileSuffix) $ prettifiedOutput
+             removeFile $ "./out/" ++ fileName ++ oldFileSuffix
+    where
+      oldFileSuffix = analysisOldFileSuffix analysisKind
+      fileSuffix = analysisFileSuffix analysisKind
+      prettifier = analysisPrettifier analysisKind
+
+analysisPrettifier :: KindOfAnalysis -> (String -> String)
+analysisPrettifier analysisKind =
+    case analysisKind of
+      BigO -> prettifierBigO

@@ -1,11 +1,12 @@
 module Dev.Translation where
     
-import Data.Char (toUpper, toLower)
+import Data.Char (toUpper, toLower, isLower)
 import Data.Text (splitOn, pack, unpack)
 import Debug.Trace
-
+import Data.List
+    
 import Control.Monad (mapM)
-import Control.Monad.State.Lazy (get, put, runState)
+import Control.Monad.State.Strict (get, put, runState)
 --import Control.Monad.Reader (ask, runReader)
 
 import Language.Ghc.Misc
@@ -20,16 +21,19 @@ import GhcPlugins
 placeholderFunctor :: CiaoFunctor
 placeholderFunctor = CiaoFunctor { functorName = CiaoId ""
                                  , functorArity = 0
+                                 , functorHsType = undefined -- ugly, but this shouldn't ever be accessed anyways
                                  , functorMetaPred = CiaoMetaPred ("", [])
                                  , functorEntry = CiaoEntry ("", [])
-                                 , functorPredDefinition = EmptyPred }
+                                 , functorPredDefinition = EmptyPred
+                                 , functorSubfunctorIds = [] }
 
 translate :: [Target] -> [CoreBind] -> CiaoProgram
 -- translate binds = do
 --   res <- mapM translateBind binds
 --   return (CiaoProgram res)
-translate targets binds = CiaoProgram $ map (fst . (\bind -> runState (translateBind bind) (Environment targets (collectLetBinds bind) []))) binds
-                  
+translate targets binds = CiaoProgram $ removePlaceholders $ map (fst . (\bind -> runState (translateBind bind) (Environment targets (collectLetBinds bind) [] []))) binds
+    where removePlaceholders = filter ((/=(CiaoId "")) . functorName)
+                          
 translateBind :: CoreBind -> Env CiaoFunctor
 translateBind (Rec list) = let (var, exprBind) = list !! 0 in
                            translateCoreBndr var exprBind
@@ -51,23 +55,40 @@ translateCoreBndr var exprBind = do
   else
       let arglist = trace (show $ fst funStrippedArgs) (fst funStrippedArgs)
           funStrippedArgs = unfoldLam exprBind
-          remainingExpr = snd funStrippedArgs in
-      case remainingExpr of
+          remainingExpr = snd funStrippedArgs
+          noLetRemainingExpr = case trace ("Expression perhaps with Let: " ++ (show remainingExpr)) remainingExpr of
+                                 (Let _ expr) -> expr
+                                 _ -> remainingExpr
+      in      
+      case trace ("Now the expression shouldn't be a Let: " ++ (show noLetRemainingExpr)) noLetRemainingExpr of
         caseExpr@(Case _ _ _ _) ->
             do
-              put $ env {boundIds = arglist}
+              put $ env {boundArgs = trace ("ARGLIST: " ++ show arglist) arglist}
               (varID, alts) <- fromCaseGetVarIDAndAlts caseExpr
               listOfFunctions <- splitCaseClauses varID (CiaoTerm (CiaoId name) $ (ciaoOnlyIdsArgList . map (showSDocUnsafe . ppr)) arglist) alts
+              updatedEnv <- get -- Updated env to retrieve the new info
               let predDefinition = CPredF (CiaoPredF listOfFunctions)
-              return CiaoFunctor { functorName = (CiaoId name), functorArity = arity, functorMetaPred = metapred, functorEntry = entry, functorPredDefinition = predDefinition }
+              return CiaoFunctor { functorName = (CiaoId name)
+                                 , functorArity = arity
+                                 , functorHsType = splitFunTys $ varType var
+                                 , functorMetaPred = metapred
+                                 , functorEntry = entry
+                                 , functorPredDefinition = predDefinition
+                                 , functorSubfunctorIds = fromEnvGetSubfunctorIds updatedEnv }
         _ ->
             do
-              put $ env {boundIds = arglist}
+              put $ env {boundArgs = trace ("ARGLIST: " ++ show arglist) arglist}
               translatedBody <- translateFunBody remainingExpr
               updatedEnv <- get -- Updated env to retrieve the new info
               ciaoBinds <- mapM letBindToCiao $ letBinds updatedEnv
               let predDefinition = CPredF (CiaoPredF [CiaoFunction (CiaoTerm (CiaoId name) $ (ciaoOnlyIdsArgList . map (showSDocUnsafe . ppr)) arglist) translatedBody ciaoBinds])
-              return CiaoFunctor { functorName = (CiaoId name), functorArity = arity, functorMetaPred = metapred, functorEntry = entry, functorPredDefinition = predDefinition }
+              return CiaoFunctor { functorName = (CiaoId name)
+                                 , functorArity = arity
+                                 , functorHsType = splitFunTys $ varType var
+                                 , functorMetaPred = metapred
+                                 , functorEntry = entry
+                                 , functorPredDefinition = predDefinition
+                                 , functorSubfunctorIds = fromEnvGetSubfunctorIds updatedEnv }
                      
 unfoldLam :: Expr b -> ([b], Expr b)
 unfoldLam  = go []
@@ -99,7 +120,14 @@ splitCaseClauses varAlt ciaohead@(CiaoTerm _ args) (alt:restOfAlts) = do
                                     env <- get
                                     case altcon of
                                       (LitAlt lit) -> return $ replaceArgInHeadWith ciaohead pos $ CiaoArgTerm $ CiaoTermLit $ translateLit lit
-                                      (DataAlt datacons) -> return $ replaceArgInHeadWith ciaohead pos $ CiaoArgTerm $ CiaoTerm (CiaoId $ ((hsIDtoCiaoFunctorID $ boundIds env) . showHsID env . dataConWorkId) datacons) $ map (\x -> CiaoArgTerm $ CiaoTerm (CiaoId $ ((hsIDtoCiaoVarID . showHsID env) x)) []) conargs
+                                      (DataAlt datacons) -> ciaoTerm >>= (return . replaceArgInHeadWith ciaohead pos)
+                                          where ciaoTerm = do
+                                                  cAList <- ciaoArgList
+                                                  put $ env {usedIdsInBody = (dataConWorkId datacons):(usedIdsInBody env)}
+                                                  let cTerm = CiaoTerm (CiaoId $ ((hsIDtoCiaoFunctorID $ boundArgs env) . showHsID env . dataConWorkId) datacons) $ cAList
+                                                  return $ CiaoArgTerm cTerm
+                                                ciaoArgList = sequence $ map (\x -> (put $ env {usedIdsInBody = x:(usedIdsInBody env)} :: Env ()) >>
+                                                                                    (return $ CiaoArgTerm $ CiaoTerm (CiaoId $ ((hsIDtoCiaoVarID . showHsID env) x)) [])) conargs
                                       _ -> return ciaohead
 splitCaseClauses _ _ _ = return [] -- Placeholder for type-checker, there shouldn't be
                                      -- any heads other than functor + args
@@ -181,31 +209,41 @@ translateFunBody (Case app _ _ altlist) = let var = getCoreVarFromAppTree app in
                                                              do
                                                                env <- get
                                                                collectedArgs <- collectArgsTree app []
-                                                               listOfAlts <- mapM getTermFromCaseAlt altlist
-                                                               return $ CiaoCaseFunCall (CiaoFBCall $ CiaoFunctionCall (CiaoId $ ((hsIDtoCiaoFunctorID $ boundIds env) . showHsID env) $ trace (show justvar) justvar) (reverse collectedArgs)) $ reverse listOfAlts
+                                                               listOfAlts <- mapM getTermFromCaseAlt altlist                                                                             
+                                                               put $ env {usedIdsInBody = justvar:(usedIdsInBody env)}
+                                                               return $ CiaoCaseFunCall (CiaoFBCall $ CiaoFunctionCall (CiaoId $ ((hsIDtoCiaoFunctorID $ boundArgs env) . showHsID env) $ trace ("JUSTVAR: " ++ show justvar) justvar) (reverse collectedArgs)) $ reverse listOfAlts
 translateFunBody (Let _ expr) = translateFunBody expr
-translateFunBody expr =
-    do
-      (functor, isfunctor) <- getFunctorFromAppTree expr
-      case show functor of
-        "control_exception_base_paterror" -> return CiaoEmptyFB
-        _ ->
-            let varexpr = getCoreVarFromAppTree expr in
-            case varexpr of
-              Nothing -> return CiaoEmptyFB
-              (Just justexpr) ->
-                  case isfunctor of
-                    True ->
-                        do
-                          collectedArgs <- collectArgsTree expr []
-                          return $ CiaoFBTerm functor $ trace ("COLLECTED ARGS #1: " ++ (show $ reverse $ collectedArgs)) (drop 1 $ reverse $ collectedArgs)
-                    False -> let arity = typeArity $ varType (trace (show justexpr) justexpr) in
-                        do
-                          collectedArgs <- collectArgsTree expr []
-                          if length collectedArgs < arity - 1 then
-                              return $ CiaoFBTerm functor $ trace ("COLLECTED ARGS #2: " ++ (show $ reverse $ collectedArgs)) (reverse $ collectedArgs)
-                          else
-                              return $ CiaoFBCall $ CiaoFunctionCall functor $ trace ("COLLECTED ARGS #3: " ++ (show $ reverse $ collectedArgs)) (reverse $ collectedArgs)
+translateFunBody maybeVoidExpr =
+    case maybeVoidExpr of
+      (App _ (Var x)) -> case trace ("THIS GUY COULD BE VOID#: " ++ show x) (show x) of
+                           "void#" -> trace ("RETURNING EMPTY BODY: ") $ return CiaoEmptyFB
+                           _ -> translateFunBodyAux maybeVoidExpr
+      _ -> translateFunBodyAux maybeVoidExpr
+    where translateFunBodyAux = (\expr ->
+              do
+                (functor, isfunctor) <- getFunctorFromAppTree expr
+                case show functor of
+                  "control_exception_base_paterror" -> return CiaoEmptyFB
+                  _ -> let varexpr = getCoreVarFromAppTree expr in
+                       case varexpr of
+                         Nothing -> return CiaoEmptyFB
+                         (Just justexpr) ->
+                             case isfunctor of
+                               True ->
+                                   do
+                                     collectedArgs <- collectArgsTree expr []
+                                     return $ CiaoFBTerm functor $ trace ("COLLECTED ARGS #1: " ++ (show collectedArgs)) (drop 1 $ reverse collectedArgs)
+                               False -> let arity = typeArity $ varType (trace (show justexpr) justexpr) in
+                                   do
+                                     tmpColArgs <- collectArgsTree expr []
+                                     let reversedArgs = reverse tmpColArgs
+                                     let hd = head reversedArgs
+                                     let tl = tail reversedArgs
+                                     let collectedArgs = if show hd == (toUpper . head $ show functor):(tail $ show functor) then tl else hd:tl
+                                     if length collectedArgs < arity - 1 then
+                                         return $ CiaoFBTerm functor $ trace ("COLLECTED ARGS #2: " ++ (show collectedArgs)) collectedArgs
+                                     else
+                                         return $ CiaoFBCall $ CiaoFunctionCall functor $ trace ("COLLECTED ARGS #3: " ++ (show collectedArgs)) collectedArgs)
                                                   
 getCoreVarFromAppTree :: CoreExpr -> Maybe Var
 getCoreVarFromAppTree (Var x) = Just x
@@ -219,7 +257,8 @@ getTermFromCaseAlt (altcon, conargs, altExpr) = case altcon of
                                                      do
                                                        env <- get
                                                        translatedBody <- translateFunBody altExpr
-                                                       return (CiaoFBTerm (CiaoId $ ((hsIDtoCiaoFunctorID $ boundIds env) . showHsID env . dataConWorkId) datacons) $ map (\x -> CiaoFBTerm (CiaoId $ (hsIDtoCiaoVarID . showHsID env) x) []) conargs, translatedBody)
+                                                       put $ env {usedIdsInBody = (dataConWorkId datacons):(usedIdsInBody env)}
+                                                       return (CiaoFBTerm (CiaoId $ ((hsIDtoCiaoFunctorID $ boundArgs env) . showHsID env . dataConWorkId) datacons) $ map (\x -> CiaoFBTerm (CiaoId $ (hsIDtoCiaoVarID . showHsID env) x) []) conargs, translatedBody)
                                                  LitAlt lit ->
                                                      do
                                                        translatedBody <- translateFunBody altExpr
@@ -230,7 +269,8 @@ getFunctorFromAppTree :: CoreExpr -> Env (CiaoFunctorName, Bool)
 getFunctorFromAppTree (Var x) =
     do
       env <- get
-      return (CiaoId $ ((hsIDtoCiaoFunctorID $ boundIds env) . showHsID env) x, isDataConWorkId x)
+      put $ env {usedIdsInBody = x:(usedIdsInBody env)}
+      return (CiaoId $ ((hsIDtoCiaoFunctorID $ boundArgs env) . showHsID env) x, isDataConWorkId x)
 getFunctorFromAppTree (App x _) = getFunctorFromAppTree x
 getFunctorFromAppTree _ = return (CiaoId "ERROR", False)
 
@@ -298,6 +338,10 @@ findInArgList ciaoid (y:ys) = Just $ go 0 ciaoid (y:ys)
 translateLit :: Literal -> CiaoLiteral
 translateLit lit = CiaoLitStr $ filter (not . (`elem` "#")) $ (showSDocUnsafe . ppr) lit
 
+fromEnvGetSubfunctorIds :: Environment -> [String]
+fromEnvGetSubfunctorIds env = filter (\(x:_) -> isLower x) $ trace ("SUBFUNCTOR IDs BEFORE FILTER:\nID: " ++ (intercalate "\nID: " $ map (hsIDtoCiaoFunctorID (trace ("USED IDS IN BODY: " ++ show ids) ids) . showHsID env) $ ids)) (map (hsIDtoCiaoFunctorID ids . showHsID env) $ ids)
+    where ids = usedIdsInBody env                   
+                   
 collectLetBinds :: CoreBind -> [CoreExpr]
 collectLetBinds (Rec list) = let (_, exprBind) = list !! 0 in
                          collectFromBndr exprBind    
@@ -322,14 +366,12 @@ letBindToCiao (Let bind _) =
       case bind of
         (NonRec var exprBind) ->
             do
-              --put $ env { boundIds = [] }
               translatedBody <- translateFunBody exprBind
               env <- get
               let name = hsIDtoCiaoVarID $ showHsID env $ var
               return $ CiaoBind (CiaoId name, translatedBody)
         (Rec list) -> let (var, exprBind) = list !! 0 in
                       do
-                        --put $ env { boundIds = [] }
                         translatedBody <- translateFunBody exprBind
                         env <- get
                         let name = hsIDtoCiaoVarID $ showHsID env $ var

@@ -17,4 +17,18 @@ instance Ord MyType where
 max' :: Ord a => a -> a -> a
 max' x y
     | y <= x = x
-    | otherwise = y             
+    | otherwise = y
+
+-- max2 :: MyType -> MyType -> MyType
+-- max2 x y = max' x y
+
+-- max3 :: MyType -> MyType -> MyType
+-- max3 x y = max'' (DOrd { lessOrEqual = (\x y -> ...) }) x y
+
+-- data DOrd a = DOrd { lessOrEqual :: a -> a -> Bool }
+                  
+-- max'' :: DOrd a -> a -> a -> a
+-- max'' lt x y
+--     | (lessOrEqual lt) y x = x
+--     | otherwise = y
+
