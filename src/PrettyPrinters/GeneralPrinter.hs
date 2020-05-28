@@ -6,7 +6,7 @@ import PrettyPrinters.BigO
     
 prettyPrintAnalysis :: String -> KindOfAnalysis -> IO ()
 prettyPrintAnalysis fileName analysisKind =
-    do fileContents <- readFile $ "./out/prueba.pl" --"./out/" ++ fileName ++ oldFileSuffix
+    do fileContents <- readFile $ "./out/" ++ fileName ++ oldFileSuffix
        let prettifiedOutput = prettifier fileContents
        if prettifiedOutput == "" then
            putStrLn "\nWARNING: Since the analysis didn't finish properly, no pretty-printing has been done.\n"
