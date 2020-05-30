@@ -17,7 +17,9 @@ import Dev.Translation
 import GhcPlugins
 import PrettyPrinters.AnalysisKinds
 import PrettyPrinters.GeneralPrinter
+import System.Directory
 import System.Process
+--import System.Environment (getExecutablePath)
 import Text.Regex (mkRegex, subRegex)
 
 plugin :: Plugin
@@ -46,25 +48,27 @@ pass modguts = do
   -- liftIO $ putStrLn "\n--- Haskell Binds: ---\n"
   -- liftIO $ putStrLn $ show hsBinds
   -- Write Core bindings into the .core file
-  liftIO $ putStrLn $ "\nHaskell Core binds have been written into the " ++ (coreFileName fileName) ++ " file.\n"
-  liftIO $ writeFile (coreFileName fileName) (show hsBinds)
+  hstociaoDir <- liftIO $ getCurrentDirectory
+  liftIO $ createDirectoryIfMissing False $ hstociaoDir ++ "/out"
+  liftIO $ putStrLn $ "\nHaskell Core binds have been written into the " ++ (coreFileName hstociaoDir fileName) ++ " file.\n"
+  liftIO $ writeFile (coreFileName hstociaoDir fileName) (show hsBinds)
   -- Print Ciao translation
   -- liftIO $ putStrLn "\n--- Ciao Code: ---\n"
   -- liftIO $ putStrLn $ show ciaoCode
   -- Write translation into the .pl file
-  liftIO $ putStrLn $ "Ciao translation of the Haskell functions has been written into the " ++ (ciaoFileName fileName) ++ " file.\n"
-  liftIO $ writeFile (ciaoFileName fileName) ciaoModuleHeader
+  liftIO $ putStrLn $ "Ciao translation of the Haskell functions has been written into the " ++ (ciaoFileName hstociaoDir fileName) ++ " file.\n"
+  liftIO $ writeFile (ciaoFileName hstociaoDir fileName) ciaoModuleHeader
 
-  liftIO $ appendFile (ciaoFileName fileName) $ intercalate "\n\n" $ map show translatedTypes
-  liftIO $ appendFile (ciaoFileName fileName) ((singletonListSimplify . show) ciaoCode)
-  ciaoPreludeContents <- liftIO $ readFile "./lib/ciao_prelude.pl"
+  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ intercalate "\n\n" $ map show translatedTypes
+  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) ((singletonListSimplify . show) ciaoCode)
+  ciaoPreludeContents <- liftIO $ readFile $ hstociaoDir ++ "/lib/ciao_prelude.pl"
   listOfNeededPredicates <- liftIO $ sequence $ map (tryToGetNeededPredicates ciaoPreludeContents) ciaoFunctorList
-  liftIO $ appendFile (ciaoFileName fileName) $ '\n' : (intercalate "\n\n" $ concat $ listOfNeededPredicates)
+  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ '\n' : (intercalate "\n\n" $ concat $ listOfNeededPredicates)
   maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
-  liftIO $ appendFile (ciaoFileName fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
+  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
   liftIO $ putStrLn $ "\n----------------------------------"
   liftIO $ putStrLn $ "\nExecuting Big-O analysis script:\n"
-  _ <- liftIO $ rawSystem "./analysis_scripts/analyze_bigo" [ciaoFileName fileName]
+  _ <- liftIO $ rawSystem (hstociaoDir ++ "/analysis_scripts/analyze_bigo") [ciaoFileName hstociaoDir fileName]
   liftIO $ prettyPrintAnalysis fileName BigO
   bindsOnlyPass (mapM return) modguts
 
@@ -112,11 +116,11 @@ ciaoModuleHeader = ":- module(_,_,[assertions, regtypes, functional, hiord]).\n\
   --":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').\n\n"
   -- CHANGE THE use_module TO USE A RELATIVE PATH INSTEAD OF AN ABSOLUTE ONE
 
-coreFileName :: String -> String
-coreFileName fileName = "./out/" ++ fileName ++ ".core"
+coreFileName :: FilePath -> String -> String
+coreFileName hstociaoDir fileName = hstociaoDir ++ "/out/" ++ fileName ++ ".core"
 
-ciaoFileName :: String -> String
-ciaoFileName fileName = "./out/" ++ fileName ++ ".pl"
+ciaoFileName :: FilePath -> String -> String
+ciaoFileName hstociaoDir fileName = hstociaoDir ++ "/out/" ++ fileName ++ ".pl"
 
 -- This function is just to make the resulting Ciao code prettier;
 -- instead of leaving singleton lists in the form [X | []], it turns
