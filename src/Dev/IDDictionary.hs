@@ -2,10 +2,6 @@
 
 module Dev.IDDictionary where
 
---import Data.Text (replace)
-
---substringIDDictionary :: String -> String
-
 idDictionary :: String -> String
 idDictionary str = case str of
   "Data.Foldable.length" -> "length"

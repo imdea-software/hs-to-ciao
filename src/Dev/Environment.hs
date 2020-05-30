@@ -1,6 +1,5 @@
 module Dev.Environment where
 
---import Control.Monad.Reader
 import Control.Monad.State.Strict
 import CoreSyn
 import HscTypes

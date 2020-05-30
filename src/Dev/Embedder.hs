@@ -1,8 +1,7 @@
 module Dev.Embedder where
 
-import Data.List (find, intercalate)
+import Data.List (find)
 import Data.List.Split (splitOn)
-import Debug.Trace
 import Dev.CiaoSyn
 import Text.Regex (matchRegex, mkRegex)
 
@@ -18,10 +17,8 @@ fromFunctorGetNeededPredicates :: String -> CiaoFunctor -> [Either String String
 fromFunctorGetNeededPredicates ciaoPreludeFile functor = neededPredicates
   where
     internalCiaoPrelude = getCiaoPreludePredicates ciaoPreludeFile
-    (CiaoId fname) = functorName functor
-    neededPredicates = map (searchInCiaoPrelude internalCiaoPrelude) $ trace ("SUBFUNCTOR IDS OF " ++ fname ++ ":\n" ++ (intercalate "\n" $ functorSubfunctorIds functor) ++ "\n\n") (functorSubfunctorIds functor)
+    neededPredicates = map (searchInCiaoPrelude internalCiaoPrelude) $ functorSubfunctorIds functor
 
---[String] -> [String] -> [[String]]
 getCiaoPreludePredicates :: String -> [String]
 getCiaoPreludePredicates ciaoPreludeFile = splitOn "\n\n" ciaoPreludeFile
 
@@ -30,6 +27,5 @@ searchInCiaoPrelude internalCiaoPrelude predName = case maybePred of
   (Just predDefinition) -> Right predDefinition
   Nothing -> Left predName
   where
-    -- (:-)?.*(filter).*((:-)|(:=))
     maybePred = find (\ciaoPreludePred -> (matchRegex searchRegex ciaoPreludePred) /= Nothing) internalCiaoPrelude
-    searchRegex = mkRegex $ "(:-)?.*(" ++ predName ++ ").*((:-)|(:=))" --"\\[(.*) \\| \\[\\]\\]"
+    searchRegex = mkRegex $ "(:-)?.*(" ++ predName ++ ").*((:-)|(:=))"

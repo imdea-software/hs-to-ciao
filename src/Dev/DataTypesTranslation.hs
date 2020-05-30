@@ -1,12 +1,5 @@
 module Dev.DataTypesTranslation where
 
---import Debug.Trace
-
---import Dev.Translation
-
---import CoreSyn
---import TyCoRep (Type(..))
-
 import DataCon
 import Dev.CiaoSyn
 import GhcPlugins

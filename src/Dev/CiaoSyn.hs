@@ -128,8 +128,7 @@ type CiaoHead = CiaoTerm
 
 type CiaoBody = [CiaoTerm]
 
--- NOTE: No support (yet) for infix variations of operators; they
--- will be used as standard prefix functors
+-- NOTE: No support (yet) for infix variations of operators
 data CiaoTerm = CiaoTerm CiaoFunctorName [CiaoArg] | CiaoTermLit CiaoLiteral | CiaoNumber Int | CiaoEmptyTerm
 
 instance Show CiaoTerm where

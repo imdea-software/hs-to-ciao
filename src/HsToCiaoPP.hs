@@ -2,11 +2,6 @@
 
 module HsToCiaoPP (plugin) where
 
---import Language.Ciao.CoreToCiao
---import Language.Ghc.Misc
-
---import Dev.Environment
-
 import Data.Char (toLower)
 import Data.List (intercalate)
 import Data.Maybe (catMaybes)
@@ -19,7 +14,6 @@ import PrettyPrinters.AnalysisKinds
 import PrettyPrinters.GeneralPrinter
 import System.Directory
 import System.Process
---import System.Environment (getExecutablePath)
 import Text.Regex (mkRegex, subRegex)
 
 plugin :: Plugin
@@ -38,26 +32,16 @@ pass modguts = do
   let targets = hsc_targets hscEnv
   let name = showSDocUnsafe $ pprModule $ mg_module modguts
   let fileName = map toLower name
-  let definedTypes = mg_tcs modguts -- pass this to a translation
+  let definedTypes = mg_tcs modguts
   let hsBinds = mg_binds modguts
   let ciaoCode@(CiaoProgram ciaoFunctorList) = translate targets hsBinds
   let translatedTypes = translateTypes definedTypes
-  -- liftIO $ putStrLn $ "\n--- TESTS FOR TARGETS ---\n"
-  -- liftIO $ putStrLn $ intercalate "\n\n" $ (map getTargetName targets)
-  -- Print initial Haskell Binds
-  -- liftIO $ putStrLn "\n--- Haskell Binds: ---\n"
-  -- liftIO $ putStrLn $ show hsBinds
-  -- Write Core bindings into the .core file
   hstociaoDir <- liftIO $ getCurrentDirectory
   liftIO $ createDirectoryIfMissing False $ hstociaoDir ++ "/out"
   liftIO $ putStrLn $ "\nHaskell Core binds have been written into the " ++ (coreFileName hstociaoDir fileName) ++ " file.\n"
   liftIO $ writeFile (coreFileName hstociaoDir fileName) (show hsBinds)
-  -- Print Ciao translation
-  -- liftIO $ putStrLn "\n--- Ciao Code: ---\n"
-  -- liftIO $ putStrLn $ show ciaoCode
-  -- Write translation into the .pl file
   liftIO $ putStrLn $ "Ciao translation of the Haskell functions has been written into the " ++ (ciaoFileName hstociaoDir fileName) ++ " file.\n"
-  liftIO $ writeFile (ciaoFileName hstociaoDir fileName) ciaoModuleHeader
+  liftIO $ writeFile (ciaoFileName hstociaoDir fileName) $ ciaoModuleHeader hstociaoDir
 
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ intercalate "\n\n" $ map show translatedTypes
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) ((singletonListSimplify . show) ciaoCode)
@@ -111,10 +95,9 @@ errSomePredNotFound subfunctor =
 -- things required for the Ciao programs to work as expected
 -- (module dependencies  and such), or whatever that goes before
 -- the actual code, really
-ciaoModuleHeader :: String
-ciaoModuleHeader = ":- module(_,_,[assertions, regtypes, functional, hiord]).\n\n" -- ++
-  --":- use_module('~/hs-to-ciao/lib/ciao_prelude.pl').\n\n"
-  -- CHANGE THE use_module TO USE A RELATIVE PATH INSTEAD OF AN ABSOLUTE ONE
+ciaoModuleHeader :: FilePath -> String
+ciaoModuleHeader _ = ":- module(_,_,[assertions, regtypes, functional, hiord]).\n\n" -- ++
+  --":- use_module('" ++ hstociaoDir ++ "/lib/ciao_prelude.pl').\n\n"
 
 coreFileName :: FilePath -> String -> String
 coreFileName hstociaoDir fileName = hstociaoDir ++ "/out/" ++ fileName ++ ".core"
