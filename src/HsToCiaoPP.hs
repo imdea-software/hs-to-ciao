@@ -2,9 +2,10 @@
 
 module HsToCiaoPP (plugin) where
 
+import Control.Monad.Loops (iterateWhile)
 import Data.Char (toLower)
 import Data.List (intercalate)
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, fromJust)
 import Dev.CiaoSyn
 import Dev.DataTypesTranslation
 import Dev.Embedder
@@ -28,6 +29,10 @@ install _ todo =
 
 pass :: ModGuts -> CoreM ModGuts
 pass modguts = do
+  liftIO $ putStrLn strWelcomeUser -- This string is defined down in this module
+  analysisOption <- liftIO $ iterateWhile (== Nothing) analysisSelect
+  let analysisKind = fromJust analysisOption -- analysisOption shouldn't be Nothing, given the previous line
+  liftIO $ putStrLn "\n----------------------------------"
   hscEnv <- getHscEnv
   let targets = hsc_targets hscEnv
   let name = showSDocUnsafe $ pprModule $ mg_module modguts
@@ -40,9 +45,8 @@ pass modguts = do
   liftIO $ createDirectoryIfMissing False $ hstociaoDir ++ "/out"
   liftIO $ putStrLn $ "\nHaskell Core binds have been written into the " ++ (coreFileName hstociaoDir fileName) ++ " file.\n"
   liftIO $ writeFile (coreFileName hstociaoDir fileName) (show hsBinds)
-  liftIO $ putStrLn $ "Ciao translation of the Haskell functions has been written into the " ++ (ciaoFileName hstociaoDir fileName) ++ " file.\n"
+  liftIO $ putStrLn $ "Ciao translation of the Haskell functions has been written into the " ++ (ciaoFileName hstociaoDir fileName) ++ " file."
   liftIO $ writeFile (ciaoFileName hstociaoDir fileName) $ ciaoModuleHeader hstociaoDir
-
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ intercalate "\n\n" $ map show translatedTypes
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) ((singletonListSimplify . show) ciaoCode)
   ciaoPreludeContents <- liftIO $ readFile $ hstociaoDir ++ "/lib/ciao_prelude.pl"
@@ -51,10 +55,27 @@ pass modguts = do
   maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
   liftIO $ putStrLn $ "\n----------------------------------"
-  liftIO $ putStrLn $ "\nExecuting Big-O analysis script:\n"
-  _ <- liftIO $ rawSystem (hstociaoDir ++ "/analysis_scripts/analyze_bigo") [ciaoFileName hstociaoDir fileName]
-  liftIO $ prettyPrintAnalysis fileName BigO
+  liftIO $ putStrLn $ "\nExecuting " ++ (show analysisKind) ++ " analysis script:\n"
+  _ <- liftIO $ rawSystem (hstociaoDir ++ (locateAnalysisScript analysisKind)) [ciaoFileName hstociaoDir fileName]
+  liftIO $ prettyPrintAnalysis fileName analysisKind
   bindsOnlyPass (mapM return) modguts
+
+-- This is the function you'd want to extend if you were to add
+-- more kinds of analysis to the plugin, just add more options
+analysisSelect :: IO (Maybe KindOfAnalysis)
+analysisSelect =
+  do
+    optionSelected <- getLine
+    case optionSelected of
+      "1" -> return $ Just BigO
+      _ -> do
+        putStrLn "The selected option is invalid. Please, select a valid option."
+        return Nothing
+
+locateAnalysisScript :: KindOfAnalysis -> String
+locateAnalysisScript analysisKind =
+  case analysisKind of
+    BigO -> "/analysis_scripts/analyze_bigo"
 
 -- Returns the predicates it could find, and prints an error for the ones
 -- it couldn't find
@@ -110,3 +131,10 @@ ciaoFileName hstociaoDir fileName = hstociaoDir ++ "/out/" ++ fileName ++ ".pl"
 -- them into something like [X], far more readable.
 singletonListSimplify :: String -> String
 singletonListSimplify ciaoProgram = subRegex (mkRegex "\\[(.*) \\| \\[\\]\\]") ciaoProgram "[\\1]"
+
+strWelcomeUser :: String
+strWelcomeUser =
+  "\nBefore performing an analysis to your specified file(s),\nplease choose "
+    ++ "the kind of analysis you would like to have performed:\n\n"
+    ++ "1) Big-O analysis\n\n"
+    ++ "Type in the number corresponding to the analysis kind and press ENTER:"

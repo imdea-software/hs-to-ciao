@@ -22,5 +22,5 @@ library
   ghc-options:         -Wall -Werror
   hs-source-dirs:      src
   build-depends:       base, ghc >= 8.4.4
-  build-depends:       unordered-containers, mtl, hashable, regex-base, regex-compat, regex-pcre, text, process, directory, containers, split
+  build-depends:       unordered-containers, monad-loops, mtl, hashable, regex-base, regex-compat, regex-pcre, text, process, directory, containers, split
   default-language:    Haskell2010

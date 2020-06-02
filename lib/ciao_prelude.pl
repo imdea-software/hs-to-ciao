@@ -18,8 +18,8 @@ isthree(Ds_d2tf) := false.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 
-:- entry bool/2 : callable * atm.
 :- meta_predicate bool(goal,?).
+:- entry bool/2 : callable * atm.
 bool(X,T) :- (X -> T=true ; T=false).
 
 :- meta_predicate fun_apply(pred(2),?,?).
@@ -34,31 +34,40 @@ compose(F, G, X) := ~F(~G(X)).
 %%%%%% Comparison operations
 
 :- meta_predicate equals(?,?,?).
+:- entry less/3 : int * int * atm.
 equals(X,Y) := ~bool(X == Y).
 
 :- meta_predicate less(?,?,?).
+:- entry less/3 : int * int * atm.
 less(X,Y) := ~bool(X < Y).
 
 :- meta_predicate great(?,?,?).
+:- entry less/3 : int * int * atm.
 great(X,Y) := ~bool(X > Y).
 
 :- meta_predicate less_or_eq(?,?,?).
+:- entry less/3 : int * int * atm.
 less_or_eq(X,Y) := ~bool(X =< Y).
 
 :- meta_predicate great_or_eq(?,?,?).
+:- entry less/3 : int * int * atm.
 great_or_eq(X,Y) := ~bool(X >= Y).
 
 %%%%%% Arithmetic operations
 :- meta_predicate plus(?,?,?).
+:- entry less/3 : int * int * int.
 plus(X, Y) := X + Y.
 
 :- meta_predicate substract(?,?,?).
+:- entry less/3 : int * int * int.
 substract(X, Y) := X - Y.
 
 :- meta_predicate div(?,?,?).
+:- entry less/3 : int * int * int.
 div(X, Y) := X // Y.
 
 :- meta_predicate mult(?,?,?).
+:- entry less/3 : int * int * int.
 mult(X, Y) := X * Y.
 
 %%%%%%%

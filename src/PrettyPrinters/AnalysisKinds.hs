@@ -1,7 +1,10 @@
 module PrettyPrinters.AnalysisKinds where
 
 -- This leaves room for extensibility for future kinds of analysis
-data KindOfAnalysis = BigO
+data KindOfAnalysis = BigO deriving (Eq)
+
+instance Show KindOfAnalysis where
+  show BigO = "Big-O"
 
 analysisFileSuffix :: KindOfAnalysis -> String
 analysisFileSuffix analysisKind =
