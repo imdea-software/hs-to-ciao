@@ -21,7 +21,7 @@ For example, let's say you want to translate `examples/ListReverse.hs`. Then, ru
 
 
 ```
-stack exec -- ghc -fplugin=HsToCiaoPP tests/ListReverse.hs
+stack exec -- ghc -fplugin=HsToCiaoPP examples/ListReverse.hs
 ```
 
 You will be prompted to select between several kinds of resource analysis (right now, only Big-O analysis is supported).
