@@ -1,28 +1,32 @@
 # hs-to-ciao
-Translate Haskell code to [Ciao](http://ciao-lang.org/) for code analysis, implemented as a [ghc-plugin](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/extending_ghc.html#compiler-plugins).
+Translate Haskell code to [Ciao](http://ciao-lang.org/) for automatic resource analysis, implemented as a [ghc-plugin](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/extending_ghc.html#compiler-plugins).
 
-# Install
+# Installation
+The easiest way to install the plugin is by using [Stack](https://docs.haskellstack.org/en/stable/README/).
+In most Unix-like systems (macOS and Linux based), running the following command should be enough:
 
-- using cabal: Run `cabal install` inside the `hs-to-ciao` directory.
-- using stack: Run `stack install` inside the `hs-to-ciao` directory.
+```
+curl -sSL https://get.haskellstack.org/ | sh
+```
 
-Both generate the HsToCiaoPP compiler plugin.
+After installing it, clone this repository somewhere, and simply run `stack build` inside the `hs-to-ciao` directory.
 
-# Run
+The plugin is tested for GHC versions `8.6.5`, `8.8.1`, `8.8.2`, `8.8.3` and `8.10.1`. Older or newer versions _might not_ work.
+Also, an installation through [Cabal](https://www.haskell.org/cabal/) hasn't been actively tested.
 
-Add the `-fplugin=HsToCiaoPP` to ghc. E.g., to translate `tests/Merge.hs` run 
+# Usage
+
+Add the `-fplugin=HsToCiaoPP` option when compiling a Haskell source from GHC.
+For example, let's say you want to translate `examples/ListReverse.hs`. Then, run:
 
 
 ```
-# if installed with cabal 
-ghc -fplugin=HsToCiaoPP tests/Merge.hs
-
-
-# if installed with stack 
-stack exec -- ghc -fplugin=HsToCiaoPP tests/Merge.hs
+stack exec -- ghc -fplugin=HsToCiaoPP tests/ListReverse.hs
 ```
 
-The cioa translation of the Haskell file will be written in `out/merge.pl`.
+You will be prompted to select between several kinds of resource analysis (right now, only Big-O analysis is supported).
+After choosing one, both the Ciao translation of the original Haskell source and the results of the analysis
+will be written in the `out/` folder (in this example, `out/listreverse.pl` and `out/listreverse_big-o.txt`).
 
 
 
