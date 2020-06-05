@@ -1,5 +1,5 @@
 # hs-to-ciao
-Translate Haskell code to [Ciao](http://ciao-lang.org/) for automatic resource analysis, implemented as a [ghc-plugin](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/extending_ghc.html#compiler-plugins).
+Translate [Haskell](https://www.haskell.org/) code to [Ciao](http://ciao-lang.org/) for automatic resource analysis, implemented as a [ghc-plugin](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/extending_ghc.html#compiler-plugins).
 
 # Installation
 The easiest way to install the plugin is by using [Stack](https://docs.haskellstack.org/en/stable/README/).
@@ -16,7 +16,7 @@ Also, an installation through [Cabal](https://www.haskell.org/cabal/) hasn't bee
 
 If you just want to translate Haskell into Ciao, having installed the plugin is enough.
 However, if you intend on using the resource analysis capabilities,
-you will need a working [Ciao](https://ciao-lang.org/) installation, 
+you will need a working Ciao installation, 
 as well as the `ciaopp` and `ciaopp_extra` bundles. 
 Since these bundles are provided _on demand_,
 you should ask the [CLIP Lab](https://cliplab.org/Software/index.html) staff for access and support,
