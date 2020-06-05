@@ -14,6 +14,14 @@ After installing it, clone this repository somewhere, and simply run `stack buil
 The plugin is tested for GHC versions `8.6.5`, `8.8.1`, `8.8.2`, `8.8.3` and `8.10.1`. Older or newer versions _might not_ work.
 Also, an installation through [Cabal](https://www.haskell.org/cabal/) hasn't been actively tested.
 
+If you just want to translate Haskell into Ciao, having installed the plugin is enough.
+However, if you intend on using the resource analysis capabilities,
+you will need a working [Ciao](https://ciao-lang.org/) installation, 
+as well as the `ciaopp` and `ciaopp_extra` bundles. 
+Since these bundles are provided _on demand_,
+you should ask the [CLIP Lab](https://cliplab.org/Software/index.html) staff for access and support,
+since they are the ones responsible for Ciao's development.
+
 # Usage
 
 Add the `-fplugin=HsToCiaoPP` option when compiling a Haskell source from GHC.
