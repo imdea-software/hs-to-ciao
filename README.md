@@ -36,5 +36,10 @@ You will be prompted to select between several kinds of resource analysis (right
 After choosing one, both the Ciao translation of the original Haskell source and the results of the analysis
 will be written in the `out/` folder (in this example, `out/listreverse.pl` and `out/listreverse_big-o.txt`).
 
+# Detailed explanation of the plugin
+
+The details of the project are explained thoroughly in [my](https://davidmazarro.com/) bachelor's thesis;
+I'll add a link to the document here once my [university](https://www.upm.es/) uploads the thesis to their [archive](http://oa.upm.es/).
+
 
 
