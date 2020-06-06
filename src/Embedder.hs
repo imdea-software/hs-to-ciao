@@ -1,8 +1,8 @@
-module Dev.Embedder where
+module Embedder where
 
 import Data.List (find)
 import Data.List.Split (splitOn)
-import Dev.CiaoSyn
+import CiaoSyn
 import Text.Regex (matchRegex, mkRegex)
 
 {- WARNING: This is a quite nasty workaround. This is just to have a way

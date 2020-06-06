@@ -5,7 +5,7 @@ for whatever reason, please make sure they are separated by at least
 one empty line, and with the clauses for the same predicate being separated
 by no more than one linebreak (i.e. no blank lines inbetween clauses);
 this is so that the nasty predicate embedder I coded
-at src/Dev/Embedder.hs can work. Otherwise, the translation could fail
+at src/Embedder.hs can work. Otherwise, the translation could fail
 if it can't separate the predicates here properly and you rely on any of them.
 */
    

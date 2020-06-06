@@ -1,16 +1,16 @@
-module Dev.Translation where
+module Translation.MainTranslation where
 
 import Control.Monad (mapM)
 import Control.Monad.State.Strict (get, put, runState)
 import CoreSyn
 import Data.Char (isLower, toLower, toUpper)
 import Data.Text (pack, splitOn, unpack)
-import Dev.CiaoSyn
-import Dev.Environment
-import Dev.IDDictionary
+import CiaoSyn
+import Translation.Environment
+import IDDictionary
 import DynFlags
 import GhcPlugins
-import Language.Ghc.Misc ()
+import Translation.CoreInstances ()
 import TyCoRep (Type (..))
 
 placeholderFunctor :: CiaoFunctor

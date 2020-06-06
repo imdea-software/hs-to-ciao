@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Dev.IDDictionary where
+module IDDictionary where
 
 idDictionary :: String -> String
 idDictionary str = case str of

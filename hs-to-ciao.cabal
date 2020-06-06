@@ -9,16 +9,16 @@ cabal-version:       >=1.10
 
 library 
   exposed-modules:     HsToCiaoPP,
-                       Dev.CiaoSyn
-                       Dev.Translation
-                       Dev.IDDictionary
-                       Dev.DataTypesTranslation
-                       Dev.Environment
-                       Dev.Embedder
+                       CiaoSyn
+                       Embedder
+                       IDDictionary
+                       Translation.MainTranslation
+                       Translation.DataTypesTranslation
+                       Translation.Environment
+                       Translation.CoreInstances
                        PrettyPrinters.GeneralPrinter
                        PrettyPrinters.AnalysisKinds
                        PrettyPrinters.BigO
-                       Language.Ghc.Misc
   ghc-options:         -Wall -Werror
   hs-source-dirs:      src
   build-depends:       base, ghc >= 8.4.4

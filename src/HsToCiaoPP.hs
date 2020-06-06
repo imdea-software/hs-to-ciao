@@ -6,10 +6,10 @@ import Control.Monad.Loops (iterateWhile)
 import Data.Char (toLower)
 import Data.List (intercalate)
 import Data.Maybe (catMaybes, fromJust)
-import Dev.CiaoSyn
-import Dev.DataTypesTranslation
-import Dev.Embedder
-import Dev.Translation
+import CiaoSyn
+import Embedder
+import Translation.DataTypesTranslation
+import Translation.MainTranslation
 import GhcPlugins
 import PrettyPrinters.AnalysisKinds
 import PrettyPrinters.GeneralPrinter

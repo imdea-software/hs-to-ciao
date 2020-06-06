@@ -1,4 +1,4 @@
-module Dev.Environment where
+module Translation.Environment where
 
 import Control.Monad.State.Strict
 import CoreSyn

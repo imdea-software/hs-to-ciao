@@ -1,9 +1,9 @@
-module Dev.DataTypesTranslation where
+module Translation.DataTypesTranslation where
 
 import DataCon
-import Dev.CiaoSyn
+import CiaoSyn
 import GhcPlugins
-import Language.Ghc.Misc ()
+import Translation.CoreInstances ()
 
 translateTypes :: [TyCon] -> [CiaoRegtype]
 translateTypes = map translateType

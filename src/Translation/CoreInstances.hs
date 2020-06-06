@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Language.Ghc.Misc where
+module Translation.CoreInstances where
 
 import BasicTypes
 import CoreSyn

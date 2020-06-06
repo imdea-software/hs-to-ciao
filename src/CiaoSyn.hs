@@ -1,4 +1,4 @@
-module Dev.CiaoSyn where
+module CiaoSyn where
 
 import Data.Char (toLower)
 import Data.List (intercalate)
