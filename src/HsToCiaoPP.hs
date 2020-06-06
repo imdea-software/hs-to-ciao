@@ -49,15 +49,18 @@ pass modguts = do
   liftIO $ writeFile (ciaoFileName hstociaoDir fileName) $ ciaoModuleHeader hstociaoDir
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ intercalate "\n\n" $ map show translatedTypes
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) ((singletonListSimplify . show) ciaoCode)
-  ciaoPreludeContents <- liftIO $ readFile $ hstociaoDir ++ "/lib/ciao_prelude.pl"
-  listOfNeededPredicates <- liftIO $ sequence $ map (tryToGetNeededPredicates ciaoPreludeContents) ciaoFunctorList
-  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ '\n' : (intercalate "\n\n" $ concat $ listOfNeededPredicates)
-  maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
-  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
-  liftIO $ putStrLn $ "\n----------------------------------"
-  liftIO $ putStrLn $ "\nExecuting " ++ (show analysisKind) ++ " analysis script:\n"
-  _ <- liftIO $ rawSystem (hstociaoDir ++ (locateAnalysisScript analysisKind)) [ciaoFileName hstociaoDir fileName]
-  liftIO $ prettyPrintAnalysis fileName analysisKind
+  case analysisKind of
+    NoAnalysis -> return () -- do nothing
+    _ -> do
+      ciaoPreludeContents <- liftIO $ readFile $ hstociaoDir ++ "/lib/ciao_prelude.pl"
+      listOfNeededPredicates <- liftIO $ sequence $ map (tryToGetNeededPredicates ciaoPreludeContents) ciaoFunctorList
+      liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ '\n' : (intercalate "\n\n" $ concat $ listOfNeededPredicates)
+      maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
+      liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
+      liftIO $ putStrLn $ "\n----------------------------------"
+      liftIO $ putStrLn $ "\nExecuting " ++ (show analysisKind) ++ " analysis script:\n"
+      _ <- liftIO $ rawSystem (hstociaoDir ++ (locateAnalysisScript analysisKind)) [ciaoFileName hstociaoDir fileName]
+      liftIO $ prettyPrintAnalysis fileName analysisKind
   bindsOnlyPass (mapM return) modguts
 
 -- This is the function you'd want to extend if you were to add
@@ -68,6 +71,7 @@ analysisSelect =
     optionSelected <- getLine
     case optionSelected of
       "1" -> return $ Just BigO
+      "2" -> return $ Just NoAnalysis
       _ -> do
         putStrLn "The selected option is invalid. Please, select a valid option."
         return Nothing
@@ -76,6 +80,7 @@ locateAnalysisScript :: KindOfAnalysis -> String
 locateAnalysisScript analysisKind =
   case analysisKind of
     BigO -> "/analysis_scripts/analyze_bigo"
+    NoAnalysis -> ""
 
 -- Returns the predicates it could find, and prints an error for the ones
 -- it couldn't find
@@ -136,5 +141,6 @@ strWelcomeUser :: String
 strWelcomeUser =
   "\nBefore performing an analysis to your specified file(s),\nplease choose "
     ++ "the kind of analysis you would like to have performed:\n\n"
-    ++ "1) Big-O analysis\n\n"
+    ++ "1) Big-O analysis\n"
+    ++ "2) No analysis (just translation)\n\n"
     ++ "Type in the number corresponding to the analysis kind and press ENTER:"
