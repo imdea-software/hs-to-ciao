@@ -8,8 +8,9 @@ import Data.Text (pack, splitOn, unpack)
 import Dev.CiaoSyn
 import Dev.Environment
 import Dev.IDDictionary
+import DynFlags
 import GhcPlugins
-import Language.Ghc.Misc
+import Language.Ghc.Misc ()
 import TyCoRep (Type (..))
 
 placeholderFunctor :: CiaoFunctor
@@ -396,3 +397,11 @@ letBindToCiao (Let bind _) =
               let name = hsIDtoCiaoVarID $ showHsID env $ var
               return $ CiaoBind (CiaoId name, translatedBody)
 letBindToCiao _ = error "letBindToCiao should only receive a Let; check if it's receiving something else!"
+
+showHsID :: Environment -> Id -> String
+showHsID env x =
+  let name = (showSDocForUser unsafeGlobalDynFlags alwaysQualify . ppr) x
+      prefix = takeWhile (/= '.') name
+   in if elem prefix (map ((takeWhile (/= '.')) . tail . (dropWhile (/= '/')) . getTargetName) $ targetModuleNames env)
+        then tail . (dropWhile (/= '.')) $ name
+        else name                  
