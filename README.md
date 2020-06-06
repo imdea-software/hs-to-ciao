@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="500" height="200" src="hs-to-ciao-logo.svg">
+</p>
+
 [![Build Status](https://travis-ci.com/imdea-software/hs-to-ciao.svg?branch=master)](https://travis-ci.com/imdea-software/hs-to-ciao)
 
 # hs-to-ciao
