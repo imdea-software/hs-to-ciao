@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/imdea-software/hs-to-ciao.svg?branch=master)](https://travis-ci.com/imdea-software/hs-to-ciao)
+
 # hs-to-ciao
 Translate [Haskell](https://www.haskell.org/) code to [Ciao](http://ciao-lang.org/) for automatic resource analysis, implemented as a [ghc-plugin](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/extending_ghc.html#compiler-plugins).
 
