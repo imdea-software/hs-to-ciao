@@ -64,7 +64,10 @@ instance Show CiaoEntry where
   show (CiaoEntry (_, [])) = ""
   show (CiaoEntry (predname, types)) = ":- entry " ++ predname ++ "/" ++ (show $ (length types) + 1) ++ " : " ++ (intercalate " * " types) ++ " * var."
 
-data CiaoPred = CPredC CiaoPredC | CPredF CiaoPredF | EmptyPred
+data CiaoPred
+  = CPredC CiaoPredC
+  | CPredF CiaoPredF
+  | EmptyPred
 
 instance Show CiaoPred where
   show (CPredC predic) = show predic
@@ -96,7 +99,13 @@ instance Show CiaoFunction where
       CiaoEmptyFB -> ""
       _ -> show ciaohead ++ " := " ++ show fcall ++ (if null bindlist then "" else " :- \n    ") ++ (intercalate ",\n    " $ map show bindlist) ++ "."
 
-data CiaoFunctionBody = CiaoFBTerm CiaoFunctorName [CiaoFunctionBody] | CiaoFBCall CiaoFunctionCall | CiaoFBLit CiaoLiteral | CiaoCaseVar CiaoId [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoCaseFunCall CiaoFunctionBody [(CiaoFunctionBody, CiaoFunctionBody)] | CiaoEmptyFB
+data CiaoFunctionBody
+  = CiaoFBTerm CiaoFunctorName [CiaoFunctionBody]
+  | CiaoFBCall CiaoFunctionCall
+  | CiaoFBLit CiaoLiteral
+  | CiaoCaseVar CiaoId [(CiaoFunctionBody, CiaoFunctionBody)]
+  | CiaoCaseFunCall CiaoFunctionBody [(CiaoFunctionBody, CiaoFunctionBody)]
+  | CiaoEmptyFB
 
 instance Show CiaoFunctionBody where
   show (CiaoFBTerm name arglist) =
@@ -129,7 +138,11 @@ type CiaoHead = CiaoTerm
 type CiaoBody = [CiaoTerm]
 
 -- NOTE: No support (yet) for infix variations of operators
-data CiaoTerm = CiaoTerm CiaoFunctorName [CiaoArg] | CiaoTermLit CiaoLiteral | CiaoNumber Int | CiaoEmptyTerm
+data CiaoTerm
+  = CiaoTerm CiaoFunctorName [CiaoArg]
+  | CiaoTermLit CiaoLiteral
+  | CiaoNumber Int
+  | CiaoEmptyTerm
 
 instance Show CiaoTerm where
   show (CiaoTerm functor arglist) =
@@ -153,7 +166,9 @@ newtype CiaoId = CiaoId String deriving (Eq)
 instance Show CiaoId where
   show (CiaoId str) = str
 
-data CiaoArg = CiaoArgId CiaoId | CiaoArgTerm CiaoTerm
+data CiaoArg
+  = CiaoArgId CiaoId
+  | CiaoArgTerm CiaoTerm
 
 instance Show CiaoArg where
   show (CiaoArgId ciaoid) = show ciaoid
