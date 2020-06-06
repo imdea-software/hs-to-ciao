@@ -1,7 +1,7 @@
 module Translation.DataTypesTranslation where
 
-import DataCon
 import CiaoSyn
+import DataCon
 import GhcPlugins
 import Translation.CoreInstances ()
 

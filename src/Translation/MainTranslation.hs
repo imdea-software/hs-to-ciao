@@ -1,16 +1,16 @@
 module Translation.MainTranslation where
 
+import CiaoSyn
 import Control.Monad (mapM)
 import Control.Monad.State.Strict (get, put, runState)
 import CoreSyn
 import Data.Char (isLower, toLower, toUpper)
 import Data.Text (pack, splitOn, unpack)
-import CiaoSyn
-import Translation.Environment
-import IDDictionary
 import DynFlags
 import GhcPlugins
+import IDDictionary
 import Translation.CoreInstances ()
+import Translation.Environment
 import TyCoRep (Type (..))
 
 placeholderFunctor :: CiaoFunctor
@@ -404,4 +404,4 @@ showHsID env x =
       prefix = takeWhile (/= '.') name
    in if elem prefix (map ((takeWhile (/= '.')) . tail . (dropWhile (/= '/')) . getTargetName) $ targetModuleNames env)
         then tail . (dropWhile (/= '.')) $ name
-        else name                  
+        else name

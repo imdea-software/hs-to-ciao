@@ -2,20 +2,20 @@
 
 module HsToCiaoPP (plugin) where
 
+import CiaoSyn
 import Control.Monad.Loops (iterateWhile)
 import Data.Char (toLower)
 import Data.List (intercalate)
 import Data.Maybe (catMaybes, fromJust)
-import CiaoSyn
 import Embedder
-import Translation.DataTypesTranslation
-import Translation.MainTranslation
 import GhcPlugins
 import PrettyPrinters.AnalysisKinds
 import PrettyPrinters.GeneralPrinter
 import System.Directory
 import System.Process
 import Text.Regex (mkRegex, subRegex)
+import Translation.DataTypesTranslation
+import Translation.MainTranslation
 
 plugin :: Plugin
 plugin =
@@ -123,7 +123,7 @@ errSomePredNotFound subfunctor =
 -- the actual code, really
 ciaoModuleHeader :: FilePath -> String
 ciaoModuleHeader _ = ":- module(_,_,[assertions, regtypes, functional, hiord]).\n\n" -- ++
-  --":- use_module('" ++ hstociaoDir ++ "/lib/ciao_prelude.pl').\n\n"
+--":- use_module('" ++ hstociaoDir ++ "/lib/ciao_prelude.pl').\n\n"
 
 coreFileName :: FilePath -> String -> String
 coreFileName hstociaoDir fileName = hstociaoDir ++ "/out/" ++ fileName ++ ".core"
