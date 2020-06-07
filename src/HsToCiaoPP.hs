@@ -49,14 +49,14 @@ pass modguts = do
   liftIO $ writeFile (ciaoFileName hstociaoDir fileName) $ ciaoModuleHeader hstociaoDir
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ intercalate "\n\n" $ map show translatedTypes
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) ((singletonListSimplify . show) ciaoCode)
+  ciaoPreludeContents <- liftIO $ readFile $ hstociaoDir ++ "/lib/ciao_prelude.pl"
+  listOfNeededPredicates <- liftIO $ sequence $ map (tryToGetNeededPredicates ciaoPreludeContents) ciaoFunctorList
+  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ '\n' : (intercalate "\n\n" $ concat $ listOfNeededPredicates)
+  maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
+  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
   case analysisKind of
     NoAnalysis -> return () -- do nothing
     _ -> do
-      ciaoPreludeContents <- liftIO $ readFile $ hstociaoDir ++ "/lib/ciao_prelude.pl"
-      listOfNeededPredicates <- liftIO $ sequence $ map (tryToGetNeededPredicates ciaoPreludeContents) ciaoFunctorList
-      liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ '\n' : (intercalate "\n\n" $ concat $ listOfNeededPredicates)
-      maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
-      liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
       liftIO $ putStrLn $ "\n----------------------------------"
       liftIO $ putStrLn $ "\nExecuting " ++ (show analysisKind) ++ " analysis script:\n"
       _ <- liftIO $ rawSystem (hstociaoDir ++ (locateAnalysisScript analysisKind)) [ciaoFileName hstociaoDir fileName]
