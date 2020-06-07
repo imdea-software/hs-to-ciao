@@ -9,7 +9,7 @@ Translate [Haskell](https://www.haskell.org/) code to [Ciao](http://ciao-lang.or
 
 # Installation
 The easiest way to install the plugin is by using [Stack](https://docs.haskellstack.org/en/stable/README/).
-In most Unix-like systems (macOS and Linux based), running the following command should be enough:
+In most Unix-like systems (e.g. macOS and Linux based), running the following command should be enough:
 
 ```
 curl -sSL https://get.haskellstack.org/ | sh
