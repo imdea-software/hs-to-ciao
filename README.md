@@ -15,7 +15,7 @@ In most Unix-like systems (macOS and Linux based), running the following command
 curl -sSL https://get.haskellstack.org/ | sh
 ```
 
-After installing it, clone this repository somewhere, and simply run `stack build` inside the `hs-to-ciao` directory.
+After installing it, clone this repository somewhere, and simply run `stack build` inside the repository folder.
 
 The plugin is tested for GHC versions `8.6.5`, `8.8.1`, `8.8.2`, `8.8.3` and `8.10.1`. Older or newer versions _might not_ work.
 Also, an installation through [Cabal](https://www.haskell.org/cabal/) hasn't been actively tested.
