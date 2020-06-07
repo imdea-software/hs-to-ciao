@@ -8,6 +8,7 @@ idDictionary str = case str of
   "Data.Foldable.foldl" -> "foldl"
   "GHC.List.filter" -> "filter"
   "(<)" -> "less"
+  "(>=)" -> "great_or_eq"
   "(-)" -> "substract"
   "." -> "compose"
   ":" -> "."
@@ -18,7 +19,7 @@ idDictionary str = case str of
   "GHC.Types.False" -> "false"
   "GHC.Num.*" -> "mult"
   "GHC.Num.-" -> "substract"
-  "GHC.Num.+" -> "sum"
+  "GHC.Num.+" -> "plus"
   "GHC.Real.div" -> "div"
   "(:)" -> "."
   "GHC.Types.:" -> "."
@@ -29,5 +30,6 @@ idDictionary str = case str of
   "GHC.Base.map" -> "map"
   "GHC.Enum.enumFromTo" -> "enumfromto"
   "GHC.Classes.<" -> "less"
+  "GHC.Classes.>=" -> "great_or_eq"
   "GHC.Classes.==" -> "equals"
   _ -> str

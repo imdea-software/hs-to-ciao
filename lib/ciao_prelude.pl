@@ -54,8 +54,9 @@ less_or_eq(X,Y) := ~bool(X =< Y).
 great_or_eq(X,Y) := ~bool(X >= Y).
 
 %%%%%% Arithmetic operations
+
 :- meta_predicate plus(?,?,?).
-:- entry less/3 : int * int * int.
+:- entry plus/3 : int * int * int.
 plus(X, Y) := X + Y.
 
 :- meta_predicate substract(?,?,?).
