@@ -52,15 +52,15 @@ pass modguts = do
   ciaoPreludeContents <- liftIO $ readFile $ hstociaoDir ++ "/lib/ciao_prelude.pl"
   listOfNeededPredicates <- liftIO $ sequence $ map (tryToGetNeededPredicates ciaoPreludeContents) ciaoFunctorList
   liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ '\n' : (intercalate "\n\n" $ concat $ listOfNeededPredicates)
-  maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
-  liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
+  -- maybeBoolPred <- liftIO $ errSomePredNotFound $ searchInCiaoPrelude (getCiaoPreludePredicates ciaoPreludeContents) "bool"
+  -- liftIO $ appendFile (ciaoFileName hstociaoDir fileName) $ (\x -> case x of Nothing -> ""; (Just boolPred) -> '\n' : '\n' : boolPred) maybeBoolPred
   case analysisKind of
     NoAnalysis -> return () -- do nothing
     _ -> do
       liftIO $ putStrLn $ "\n----------------------------------"
       liftIO $ putStrLn $ "\nExecuting " ++ (show analysisKind) ++ " analysis script:\n"
       _ <- liftIO $ rawSystem (hstociaoDir ++ (locateAnalysisScript analysisKind)) [ciaoFileName hstociaoDir fileName]
-      liftIO $ prettyPrintAnalysis fileName analysisKind
+      liftIO $ prettyPrintAnalysis hstociaoDir fileName analysisKind
   bindsOnlyPass (mapM return) modguts
 
 -- This is the function you'd want to extend if you were to add
@@ -94,29 +94,35 @@ errSubfunctorNotFound :: CiaoFunctor -> Either String String -> IO (Maybe String
 errSubfunctorNotFound functor subfunctor =
   case subfunctor of
     (Left missingFunctor) ->
-      ( putStrLn $
-          "WARNING: The predicate \""
-            ++ missingFunctor
-            ++ "\", which is required by "
-            ++ (show (functorName functor) ++ "/" ++ show (functorArity functor + 1))
-            ++ " wasn't found in the ciao_prelude; it's possible that the performed analysis won't work because of this.\n"
-      )
+      case missingFunctor of
+        "control_exception_base_paterror" -> return ()
+        _ ->
+          ( putStrLn $
+              "WARNING: The predicate \""
+                ++ missingFunctor
+                ++ "\", which is required by "
+                ++ (show (functorName functor) ++ "/" ++ show (functorArity functor + 1))
+                ++ " wasn't found in the ciao_prelude; it's possible that the performed analysis won't work because of this.\n"
+          )
         >> return Nothing
     (Right foundFunctor) -> return (Just foundFunctor)
 
-errSomePredNotFound :: Either String String -> IO (Maybe String)
-errSomePredNotFound subfunctor =
-  case subfunctor of
-    (Left missingFunctor) ->
-      ( putStrLn $
-          "WARNING: The predicate \""
-            ++ missingFunctor
-            ++ "\", which could be required by"
-            ++ " some functor in the translation,"
-            ++ " wasn't found in the ciao_prelude; it's possible that the performed analysis won't work because of this.\n"
-      )
-        >> return Nothing
-    (Right foundFunctor) -> return (Just foundFunctor)
+-- errSomePredNotFound :: Either String String -> IO (Maybe String)
+-- errSomePredNotFound subfunctor =
+--   case subfunctor of
+--     (Left missingFunctor) ->
+--       case missingFunctor of
+--         "control_exception_base_paterror" -> return ()
+--         _ ->
+--           ( putStrLn $
+--               "WARNING: The predicate \""
+--                 ++ missingFunctor
+--                 ++ "\", which could be required by"
+--                 ++ " some functor in the translation,"
+--                 ++ " wasn't found in the ciao_prelude; it's possible that the performed analysis won't work because of this.\n"
+--           )
+--         >> return Nothing
+--     (Right foundFunctor) -> return (Just foundFunctor)
 
 -- things required for the Ciao programs to work as expected
 -- (module dependencies  and such), or whatever that goes before
